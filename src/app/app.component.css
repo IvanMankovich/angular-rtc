@@ -1,23 +1,47 @@
-/* AppComponent's private CSS styles */
-h1 {
-  margin-bottom: 0;
+mat-toolbar {
+  margin-bottom: 20px;
 }
 
-nav a {
-  padding: 1rem;
-  text-decoration: none;
-  margin-top: 10px;
-  display: inline-block;
-  background-color: #e8e8e8;
-  color: #3d3d3d;
+mat-toolbar>span {
+  margin-left: 10px;
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: auto;
+}
+
+.container-wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+
+.container {
+  width: 400px;
+  margin: 0 25px 25px 0;
+}
+
+.list {
+  border: solid 1px #ccc;
+  min-height: 60px;
   border-radius: 4px;
 }
 
-nav a:hover {
-  color: white;
-  background-color: #42545C;
+app-new-task {
+  margin-bottom: 30px;
 }
 
-nav a:active {
-  background-color: black;
+.empty-label {
+  font-size: 2em;
+  padding-top: 10px;
+  text-align: center;
+  opacity: 0.2;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
 }
