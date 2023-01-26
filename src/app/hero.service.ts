@@ -5,8 +5,6 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Hero } from './hero';
-import { MessageService } from './message.service';
-
 
 @Injectable({ providedIn: 'root' })
 export class HeroService {
@@ -18,8 +16,7 @@ export class HeroService {
   };
 
   constructor(
-    private http: HttpClient,
-    private messageService: MessageService) { }
+    private http: HttpClient,) { }
 
   /** GET heroes from the server */
   getHeroes(): Observable<Hero[]> {
@@ -118,6 +115,6 @@ export class HeroService {
 
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
-    this.messageService.add(`HeroService: ${message}`);
+    console.log(`HeroService: ${message}`);
   }
 }

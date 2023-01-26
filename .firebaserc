@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "angular-rtc-b24b6": {
+      "hosting": {
+        "angular-rtc": [
+          "angular-rtc-b24b6"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "angular-rtc-b24b6"
+  }
+}

@@ -1,7 +1,22 @@
-<h1>{{title}}</h1>
-<nav>
-  <a routerLink="/dashboard">Dashboard</a>
-  <a routerLink="/heroes">Heroes</a>
-</nav>
-<router-outlet></router-outlet>
-<app-messages></app-messages>
+<mat-toolbar color="primary">
+  <mat-icon>local_fire_department</mat-icon>
+  <span>Text</span>
+</mat-toolbar>
+
+<div class="content-wrapper">
+  <button (click)="newTask()" mat-button>
+    <mat-icon>add</mat-icon> Add Task
+  </button>
+
+  <div class="container-wrapper">
+    <div class="container">
+      <h2>Todo</h2>
+
+      <mat-card cdkDropList id="todo" #todoList="cdkDropList" [cdkDropListData]="todo" class="list">
+        <p class="empty-label" *ngIf="todo.length === 0">Empty</p>
+        <app-task (edit)="editTask('todo', $event)" *ngFor="let task of todo" cdkDrag [task]="task">
+        </app-task>
+      </mat-card>
+    </div>
+  </div>
+</div>
