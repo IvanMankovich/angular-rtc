@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FireService } from '../fire-service.service';
 import { Task } from '../task/task';
 
 @Component({
@@ -12,13 +13,18 @@ export class TaskDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<TaskDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: TaskDialogData
+    @Inject(MAT_DIALOG_DATA) public data: TaskDialogData,
+    private fireService: FireService
   ) { }
 
   cancel(): void {
     this.data.task.title = this.backupTask.title;
     this.data.task.description = this.backupTask.description;
     this.dialogRef.close(this.data);
+  }
+
+  delete(data: any): void {
+    this.fireService.deleteItemFromCollection('todo', data);
   }
 }
 
