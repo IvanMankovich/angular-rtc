@@ -4,11 +4,10 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogComponent } from './task-dialog/task-dialog.component';
 import { TaskDialogResult } from './task-dialog/task-dialog.component';
-// import { collection, Firestore, FirestoreModule, getFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
-import { Firestore, collectionData, collection } from '@angular/fire/firestore';
 import { FireService } from './fire-service.service';
+import { Firestore, collectionData, collection, deleteDoc, doc, addDoc, getDocs, DocumentData, onSnapshot } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -16,16 +15,11 @@ import { FireService } from './fire-service.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  // item$: Observable<Task[]>;
-  constructor(private dialog: MatDialog, private fireService: FireService) {
-    // const aaa = collection(firestore, 'todo');
-    // this.item$ = collectionData(aaa) as Observable<Task[]>;
-    // console.log(this.item$.forEach(a => console.log(a)));
-  }
-  // todo$ = collectionData(collection(this.firestore, 'todo')) as Observable<Task[]>;
-  // inProgress$ = collectionData(collection(this.firestore, 'inProgress')) as Observable<Task[]>;
-  // done$ = collectionData(collection(this.firestore, 'done')) as Observable<Task[]>;
+  constructor(private dialog: MatDialog, private fireService: FireService, private firestore: Firestore) { }
+
   todo: Task[] = [];
+  inProgress: Task[] = [];
+  done: Task[] = [];
 
   editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {
     const dialogRef = this.dialog.open(TaskDialogComponent, {
@@ -47,7 +41,7 @@ export class AppComponent {
     });
   }
 
-  drop(event: CdkDragDrop<Observable<Task[]>>): void {
+  drop(event: CdkDragDrop<Task[]>): void {
     if (event.previousContainer === event.container) {
       return;
     }
@@ -72,11 +66,31 @@ export class AppComponent {
         if (!result) {
           return;
         }
-        // this.store.collection('todo').add({});
+        this.fireService.addDoc('todo', result);
       });
   }
 
   ngOnInit(): void {
-    this.fireService.getTodo().subscribe(todo => this.todo = todo);
+    // this.fireService.getCollection('todo').subscribe(todo => {
+    //   console.log('asdasd', todo);
+    //   this.todo = todo;
+    // });
+    onSnapshot(
+      collection(this.firestore, "todo"),
+      (snapshot) => {
+        const todo: any[] = [];
+        snapshot.forEach((doc) => {
+          todo.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        this.todo = todo;
+      },
+      (error) => {
+        console.error(error);
+      });
+    this.fireService.getCollection('inProgress').subscribe(inProgress => this.inProgress = inProgress);
+    this.fireService.getCollection('done').subscribe(done => this.done = done);
   }
 }
