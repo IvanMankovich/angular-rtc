@@ -7,7 +7,7 @@ import { TaskDialogResult } from './task-dialog/task-dialog.component';
 import { Observable } from 'rxjs';
 
 import { FireService } from './fire-service.service';
-import { Firestore, collectionData, collection, deleteDoc, doc, addDoc, getDocs, DocumentData, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, deleteDoc, doc, addDoc, getDoc, getDocs, DocumentData, onSnapshot, serverTimestamp, runTransaction } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -41,16 +41,33 @@ export class AppComponent {
     });
   }
 
-  drop(event: CdkDragDrop<Task[]>): void {
+  async drop(event: CdkDragDrop<Task[]>): Promise<void> {
+    console.log(event.previousContainer.data, event.previousContainer.id, event.container.data, event.container.id)
     if (event.previousContainer === event.container) {
       return;
     }
-    // transferArrayItem(
-    //   event.previousContainer.data,
-    //   event.container.data,
-    //   event.previousIndex,
-    //   event.currentIndex
-    // );
+    if (!event.previousContainer.data || !event.container.data) {
+      return;
+    }
+    const item = event.previousContainer.data[event.previousIndex];
+    console.log('item.id', item.id)
+    await runTransaction(this.firestore, async () => {
+      const docRef = doc(this.firestore, event.previousContainer.id, item.id);
+      console.log('docRef.id', docRef.id)
+      const docSnap = await getDoc(docRef);
+      console.log(docSnap.exists())
+      const promise = Promise.all([
+        deleteDoc(docRef),
+        addDoc(collection(this.firestore, event.container.id), { ...item, updateAt: serverTimestamp() })
+      ]);
+      return promise;
+    });
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   newTask(): void {
@@ -63,10 +80,11 @@ export class AppComponent {
     dialogRef
       .afterClosed()
       .subscribe((result: TaskDialogResult | undefined) => {
-        if (!result) {
+        if (!result?.task) {
           return;
+        } else {
+          this.fireService.addDoc('todo', { ...result.task, uid: (+new Date() + Math.random()).toString(), createdAt: serverTimestamp() });
         }
-        this.fireService.addDoc('todo', result);
       });
   }
 
@@ -90,7 +108,22 @@ export class AppComponent {
       (error) => {
         console.error(error);
       });
-    this.fireService.getCollection('inProgress').subscribe(inProgress => this.inProgress = inProgress);
+    onSnapshot(
+      collection(this.firestore, "inProgress"),
+      (snapshot) => {
+        const inProgress: any[] = [];
+        snapshot.forEach((doc) => {
+          inProgress.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+        this.inProgress = inProgress;
+      },
+      (error) => {
+        console.error(error);
+      });
+    // this.fireService.getCollection('inProgress').subscribe(inProgress => this.inProgress = inProgress);
     this.fireService.getCollection('done').subscribe(done => this.done = done);
   }
 }
