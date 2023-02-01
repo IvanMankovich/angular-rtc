@@ -1,10 +1,10 @@
 <mat-toolbar color="primary">
-  <mat-icon>local_fire_department</mat-icon>
-  <span>Kanban Fire</span>
+  <mat-icon>assignment</mat-icon>
+  <span>Todo</span>
 </mat-toolbar>
 
 <div class="content-wrapper">
-  <button (click)="newTask()" mat-button>
+  <button (click)="openTaskModal()" mat-button>
     <mat-icon>add</mat-icon> Add Task
   </button>
 
@@ -15,7 +15,8 @@
       <mat-card cdkDropList id="todo" #todoList="cdkDropList" [cdkDropListData]="todo | async"
         [cdkDropListConnectedTo]="[doneList, inProgressList]" (cdkDropListDropped)="drop($event)" class="list">
         <p class="empty-label" *ngIf="(todo | async)?.length === 0">Empty list</p>
-        <app-task (edit)="editTask('todo', $event)" *ngFor="let task of todo | async" cdkDrag [task]="task"></app-task>
+        <app-task (edit)="openTaskModal(ListTypes.todo, $event)" *ngFor="let task of todo | async" cdkDrag
+          [task]="task"></app-task>
       </mat-card>
     </div>
 
@@ -25,7 +26,8 @@
       <mat-card cdkDropList id="inProgress" #inProgressList="cdkDropList" [cdkDropListData]="inProgress | async"
         [cdkDropListConnectedTo]="[todoList, doneList]" (cdkDropListDropped)="drop($event)" class="list">
         <p class="empty-label" *ngIf="(inProgress | async)?.length === 0">Empty list</p>
-        <app-task (edit)="editTask('inProgress', $event)" *ngFor="let task of inProgress | async" cdkDrag [task]="task">
+        <app-task (edit)="openTaskModal(ListTypes.inProgress, $event)" *ngFor="let task of inProgress | async" cdkDrag
+          [task]="task">
         </app-task>
       </mat-card>
     </div>
@@ -36,7 +38,8 @@
       <mat-card cdkDropList id="done" #doneList="cdkDropList" [cdkDropListData]="done | async"
         [cdkDropListConnectedTo]="[todoList, inProgressList]" (cdkDropListDropped)="drop($event)" class="list">
         <p class="empty-label" *ngIf="(done | async)?.length === 0">Empty list</p>
-        <app-task (edit)="editTask('done', $event)" *ngFor="let task of done | async" cdkDrag [task]="task"></app-task>
+        <app-task (edit)="openTaskModal(ListTypes.done, $event)" *ngFor="let task of done | async" cdkDrag
+          [task]="task"></app-task>
       </mat-card>
     </div>
   </div>

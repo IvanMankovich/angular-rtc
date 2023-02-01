@@ -2,17 +2,9 @@ import { Component } from '@angular/core';
 import { Task } from './task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { TaskDialogResult, TaskDialogComponent } from './task-dialog/task-dialog.component';
-import { Firestore, CollectionReference, collection, DocumentData, collectionData, addDoc, deleteDoc, doc, updateDoc, runTransaction } from '@angular/fire/firestore';
-import { BehaviorSubject } from 'rxjs';
-
-const getObservable = (collection: CollectionReference<DocumentData>) => {
-  const subject = new BehaviorSubject<Task[]>([]);
-  collectionData(collection, { idField: 'id' }).subscribe((val: DocumentData[]) => {
-    subject.next(val as Task[]);
-  });
-  return subject;
-};
+import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from './task-dialog/task-dialog.component';
+import { Firestore, collection, addDoc, deleteDoc, doc, updateDoc, runTransaction } from '@angular/fire/firestore';
+import { getObservable } from './helpers/getObservable'
 
 @Component({
   selector: 'app-root',
@@ -20,54 +12,50 @@ const getObservable = (collection: CollectionReference<DocumentData>) => {
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  todo = getObservable(collection(this.store, 'todo'));
-  inProgress = getObservable(collection(this.store, 'inProgress'));
-  done = getObservable(collection(this.store, 'done'));
+  todo = getObservable(collection(this.store, List.todo));
+  inProgress = getObservable(collection(this.store, List.inProgress));
+  done = getObservable(collection(this.store, List.done));
+  public ListTypes = List;
 
   constructor(private dialog: MatDialog, private store: Firestore) { }
 
-  newTask(): void {
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '270px',
+  openTaskModal(list?: List, task?: Task): void {
+    const taskDialogData: ITaskDialogData = {
       data: {
-        task: {},
-      },
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe((result: TaskDialogResult) => {
-        if (!result) {
-          return;
-        }
-        addDoc(collection(this.store, 'todo'), result.task);
-      });
-  }
-
-  editTask(list: 'done' | 'todo' | 'inProgress', task: Task): void {
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '270px',
-      data: {
-        task,
-        enableDelete: true,
-      },
-    });
-    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
-      if (!result || !task.id) {
-        return;
+        task: task ? task : {},
       }
-      if (result.delete) {
-        deleteDoc(doc(this.store, list, task.id));
+    };
+    if (list) {
+      taskDialogData.data.enableDelete = list;
+    };
+
+    const dialogRef = this.dialog.open(TaskDialogComponent, taskDialogData);
+    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+      if (!result) {
+        return;
       } else {
-        updateDoc(doc(this.store, list, task.id), { task })
+        if (result.op === TaskDialogOperation.create) {
+          addDoc(collection(this.store, List.todo), result.task);
+        } else {
+          if (result.task.id && list) {
+            switch (result.op) {
+              case TaskDialogOperation.update:
+                updateDoc(doc(this.store, list, result.task.id), { ...result.task });
+                break;
+              case TaskDialogOperation.delete:
+                deleteDoc(doc(this.store, list, result.task.id));
+                break;
+              default:
+                break;
+            }
+          }
+        }
       }
     });
   }
 
   drop(event: CdkDragDrop<Task[] | null>): void {
-    if (event.previousContainer === event.container) {
-      return;
-    }
-    if (!event.previousContainer.data || !event.container.data) {
+    if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
       return;
     }
     const item = event.previousContainer.data[event.previousIndex];
@@ -85,4 +73,10 @@ export class AppComponent {
       event.currentIndex
     );
   }
+}
+
+export enum List {
+  done = 'done',
+  todo = 'todo',
+  inProgress = 'inProgress',
 }
