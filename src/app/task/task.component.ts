@@ -9,4 +9,6 @@ import { Task } from './task';
 export class TaskComponent {
   @Input() task: Task | null = null;
   @Output() edit = new EventEmitter<Task>();
+  @Output() delete = new EventEmitter<Task>();
+  @Output() save = new EventEmitter<Task>();
 }
