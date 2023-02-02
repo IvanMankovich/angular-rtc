@@ -9,14 +9,18 @@
   </button>
 
   <div class="container-wrapper">
-    <div class="container">
+    <!-- <p class="empty-label" *ngIf="lists.length === 0">No lists</p>
+    <app-task-stack *ngFor="let list of lists" [list]="list"></app-task-stack> -->
+
+    <!-- <div class="container">
       <h2>Todo</h2>
 
       <mat-card cdkDropList id="todo" #todoList="cdkDropList" [cdkDropListData]="todo | async"
         [cdkDropListConnectedTo]="[doneList, inProgressList]" (cdkDropListDropped)="drop($event)" class="list">
         <p class="empty-label" *ngIf="(todo | async)?.length === 0">Empty list</p>
         <app-task (edit)="openTaskModal(ListTypes.todo, $event)" *ngFor="let task of todo | async" cdkDrag
-          [task]="task"></app-task>
+          [task]="task">
+        </app-task>
       </mat-card>
     </div>
 
@@ -39,8 +43,9 @@
         [cdkDropListConnectedTo]="[todoList, inProgressList]" (cdkDropListDropped)="drop($event)" class="list">
         <p class="empty-label" *ngIf="(done | async)?.length === 0">Empty list</p>
         <app-task (edit)="openTaskModal(ListTypes.done, $event)" *ngFor="let task of done | async" cdkDrag
-          [task]="task"></app-task>
+          [task]="task">
+        </app-task>
       </mat-card>
-    </div>
+    </div> -->
   </div>
 </div>

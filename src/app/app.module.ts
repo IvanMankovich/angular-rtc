@@ -24,6 +24,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { provideMessaging, getMessaging } from '@angular/fire/messaging';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { TaskStackComponent } from './task-stack/task-stack.component';
 
 @NgModule({
   imports: [
@@ -50,7 +51,8 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
   declarations: [
     AppComponent,
     TaskComponent,
-    TaskDialogComponent
+    TaskDialogComponent,
+    TaskStackComponent
   ],
   bootstrap: [AppComponent]
 })
