@@ -1,0 +1,9 @@
+<mat-toolbar class="">
+  <mat-icon>assignment</mat-icon>
+  <span>Todo</span>
+  <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+  <mat-menu #menu="matMenu">
+    <a routerLink="/"><button mat-menu-item>Main</button></a>
+    <a routerLink="/about"><button mat-menu-item>About</button></a>
+  </mat-menu>
+</mat-toolbar>
