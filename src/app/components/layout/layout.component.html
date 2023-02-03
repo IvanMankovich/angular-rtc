@@ -1,0 +1,43 @@
+<app-header (changeEmitter)="toggleSideNav()"></app-header>
+
+<app-main-content>
+  <mat-drawer-container class="example-container" autosize>
+    <mat-drawer #drawer class="example-sidenav" mode="side">
+      <p>Auto-resizing sidenav</p>
+      <p *ngIf="showFiller">Lorem, ipsum dolor sit amet consectetur.</p>
+      <button (click)="showFiller = !showFiller" mat-raised-button>
+        Toggle extra text
+      </button>
+    </mat-drawer>
+
+    <div class="example-sidenav-content">
+      <router-outlet></router-outlet>
+      <!-- <button type="button" mat-button (click)="drawer.toggle()">
+        Toggle sidenav
+      </button> -->
+    </div>
+
+  </mat-drawer-container>
+</app-main-content>
+
+<app-footer></app-footer>
+
+
+
+<!-- <app-main-content>
+  <mat-drawer-container>
+    <mat-drawer mode="side" [opened]="isSideNavOpen">
+      <app-sidebar>
+        <button (click)="toggleSideNav()" mat-raised-button>
+          Toggle sidebar
+        </button>
+        <p>Sidebar</p>
+
+      </app-sidebar>
+
+    </mat-drawer>
+  </mat-drawer-container>
+  <div class="max-w-2xl container mx-auto mt-[50px]">
+    <router-outlet></router-outlet>
+  </div>
+</app-main-content> -->

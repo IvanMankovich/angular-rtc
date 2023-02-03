@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Task } from './task/task';
+import { Task } from './components/task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from './task-dialog/task-dialog.component';
+import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from './components/task-dialog/task-dialog.component';
 import { Firestore, addDoc, deleteDoc, doc, updateDoc, runTransaction, collectionGroup, collectionData } from '@angular/fire/firestore';
 import { getObservable } from './helpers/getObservable';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { ITaskStack } from './task-stack/task-stack.component';
+import { ITaskStack } from './components/task-stack/task-stack.component';
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

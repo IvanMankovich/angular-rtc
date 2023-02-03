@@ -4,8 +4,8 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from '../task-dialog/task-dialog.component';
 import { Firestore, collection, addDoc, deleteDoc, doc, updateDoc, runTransaction } from '@angular/fire/firestore';
-import { getObservable } from '../helpers/getObservable';
-import { List } from '../app.component';
+import { getObservable } from '../../helpers/getObservable';
+import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
