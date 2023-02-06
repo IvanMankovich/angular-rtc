@@ -42,6 +42,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FooterComponent } from './components/footer/footer.component';
+import { BoardDialogComponent } from './components/board-dialog/board-dialog.component';
+import { BoardCardComponent } from './components/board-card/board-card.component';
 
 @NgModule({
   imports: [
@@ -81,7 +83,9 @@ import { FooterComponent } from './components/footer/footer.component';
     SidebarComponent,
     HeaderComponent,
     MainContentComponent,
-    FooterComponent
+    FooterComponent,
+    BoardDialogComponent,
+    BoardCardComponent
   ],
   bootstrap: [AppComponent]
 })

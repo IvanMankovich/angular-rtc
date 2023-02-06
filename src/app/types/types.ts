@@ -1,6 +1,7 @@
 export interface IBoard {
   id: string;
-  boardTitle: string;
+  title: string;
+  description: string;
   lists: IList[];
 }
 
@@ -15,4 +16,11 @@ export interface ITask {
   taskTitle: string;
   taskDescription: string;
   complete: boolean;
+}
+
+export interface IBoardDialogData {
+  data: {
+    board: IBoard | {},
+    enableDelete?: string,
+  }
 }
