@@ -24,3 +24,9 @@ export interface IBoardDialogData {
     enableDelete?: string,
   }
 }
+
+export enum OperationType {
+  create = 'create',
+  update = 'update',
+  delete = 'delete',
+}

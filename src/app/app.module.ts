@@ -44,6 +44,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FooterComponent } from './components/footer/footer.component';
 import { BoardDialogComponent } from './components/board-dialog/board-dialog.component';
 import { BoardCardComponent } from './components/board-card/board-card.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   imports: [
@@ -85,7 +86,8 @@ import { BoardCardComponent } from './components/board-card/board-card.component
     MainContentComponent,
     FooterComponent,
     BoardDialogComponent,
-    BoardCardComponent
+    BoardCardComponent,
+    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })
