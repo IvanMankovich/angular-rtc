@@ -1,26 +1,23 @@
-import { Component } from '@angular/core';
-import { Firestore, addDoc, deleteDoc, doc, updateDoc, runTransaction, collectionGroup, collectionData } from '@angular/fire/firestore';
-import { getObservable } from 'src/app/helpers/getObservable';
+import { Component, OnInit } from '@angular/core';
+import { Firestore, addDoc, deleteDoc, doc, updateDoc, collection, } from '@angular/fire/firestore';
 import { IBoard, IBoardDialogData } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { BoardDialogComponent, BoardDialogOperation, BoardDialogResult } from 'src/app/components/board-dialog/board-dialog.component';
-import { collection } from "firebase/firestore";
+import { onSnapshot } from '@firebase/firestore';
+import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.css']
 })
-export class MainPageComponent {
-  title = 'Main';
-  loading = false;
-  collectionName = 'boards';
-  boards$ = getObservable(collection(this.store, this.collectionName));
+export class MainPageComponent implements OnInit {
+  title: string = 'Main';
+  collectionName: string = 'boards';
+  boards: IBoard[] = [];
+  loading: boolean = true;
 
-  constructor(private store: Firestore, private dialog: MatDialog) {
-    // console.log(this.lists);
-    console.log(this.boards$)
-  }
+  constructor(private store: Firestore, private dialog: MatDialog) { }
 
   openBoardModal(boardId?: string, board?: IBoard): void {
     const boardDialogData: IBoardDialogData = {
@@ -55,5 +52,52 @@ export class MainPageComponent {
         }
       }
     });
+  }
+
+  openBoardConfirmModal(boardId?: string, board?: IBoard): void {
+    const boardDialogData: IBoardDialogData = {
+      data: {
+        board: board ? board : {},
+      }
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, boardDialogData);
+    dialogRef.afterClosed().subscribe((result: BoardDialogResult) => {
+      console.log(result);
+      if (!result) {
+        return;
+      } else {
+        if (result.board.id && boardId) {
+          switch (result.op) {
+            case BoardDialogOperation.delete:
+              deleteDoc(doc(this.store, this.collectionName, result.board.id));
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    onSnapshot(
+      collection(this.store, this.collectionName),
+      (querySnapshot) => {
+        const tempBoards: IBoard[] = [];
+        querySnapshot.forEach((doc) => {
+          tempBoards.push({
+            id: doc.id,
+            ...doc.data(),
+          } as IBoard)
+        });
+        this.boards = tempBoards;
+        this.loading = false;
+      },
+      (error) => {
+        this.loading = false;
+        console.error(error);
+      }
+    );
   }
 }

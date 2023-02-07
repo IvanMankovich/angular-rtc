@@ -1,6 +1,9 @@
 <div>
-  <p *ngIf="!boards$">No borads yet.</p>
+  <p *ngIf="!boards">No borads yet.</p>
   <button (click)="openBoardModal()" mat-button>Create board</button>
 </div>
 
-<app-board-card *ngFor="let board of boards$  | async" [board]="board"></app-board-card>
+<p *ngIf="loading">Loading.</p>
+<app-board-card *ngFor="let board of boards" [board]="board" (edit)="openBoardModal(board.id, board)"
+  (delete)="openBoardConfirmModal(board.id, board)">
+</app-board-card>
