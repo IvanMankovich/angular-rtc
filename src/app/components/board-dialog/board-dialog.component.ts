@@ -12,8 +12,7 @@ import { IBoard, IList } from 'src/app/types/types';
 export class BoardDialogComponent {
   @Input() title: string = '';
   @Input() description: string = '';
-  @Input() lists: IList[] = [];
-
+  @Input() lists: string[] = [];
 
   public OperationTypes = BoardDialogOperation;
   constructor(
@@ -50,7 +49,6 @@ export class BoardDialogComponent {
       op: op,
     };
 
-    console.log(result);
     this.dialogRef.close(result);
   }
 

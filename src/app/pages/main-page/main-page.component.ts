@@ -19,7 +19,7 @@ export class MainPageComponent implements OnInit {
 
   constructor(private store: Firestore, private dialog: MatDialog) { }
 
-  openBoardModal(boardId?: string, board?: IBoard): void {
+  async openBoardModal(boardId?: string, board?: IBoard): Promise<void> {
     const boardDialogData: IBoardDialogData = {
       data: {
         board: board ? board : {},
@@ -30,12 +30,12 @@ export class MainPageComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(BoardDialogComponent, boardDialogData);
-    dialogRef.afterClosed().subscribe((result: BoardDialogResult) => {
+    dialogRef.afterClosed().subscribe(async (result: BoardDialogResult) => {
       if (!result) {
         return;
       } else {
         if (result.op === BoardDialogOperation.create) {
-          addDoc(collection(this.store, this.collectionName), result.board);
+          await addDoc(collection(this.store, this.collectionName), result.board);
         } else {
           if (result.board.id && boardId) {
             switch (result.op) {

@@ -2,13 +2,14 @@ export interface IBoard {
   id: string;
   title: string;
   description: string;
-  lists: IList[];
+  lists: string[];
 }
 
 export interface IList {
   id: string;
-  listTitle: string;
-  tasks: ITask[];
+  title: string;
+  description?: string;
+  tasks: string[];
 }
 
 export interface ITask {
