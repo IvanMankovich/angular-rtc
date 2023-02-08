@@ -1,2 +1,8 @@
-<p *ngIf="loading" class="text-center text-lg ">Loading...</p>
-<p *ngIf="!loading" class="text-center text-lg ">Board</p>
+<div>
+  <p *ngIf="board?.title">{{board?.title}}</p>
+  <p *ngIf="board?.lists">No lists yet.</p>
+  <button mat-button>Create list</button>
+</div>
+
+<p *ngIf="loading">Loading.</p>
+<app-task-stack *ngFor="let list of lists" [list]="list"></app-task-stack>

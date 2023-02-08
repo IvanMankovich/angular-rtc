@@ -7,6 +7,7 @@ import { Firestore, collection, addDoc, deleteDoc, doc, updateDoc, runTransactio
 import { getObservable } from '../../helpers/getObservable';
 import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
+import { IList } from 'src/app/types/types';
 
 @Component({
   selector: 'app-task-stack',
@@ -14,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./task-stack.component.css']
 })
 export class TaskStackComponent {
-  @Input() list: ITaskStack | null = null;
+  @Input() list: IList | null = null;
   // todo = getObservable(collection(this.store, List.todo));
   // inProgress = getObservable(collection(this.store, List.inProgress));
   // done = getObservable(collection(this.store, List.done));
@@ -40,7 +41,7 @@ export class TaskStackComponent {
         return;
       } else {
         if (result.op === TaskDialogOperation.create) {
-          addDoc(collection(this.store, List.todo), result.task);
+          addDoc(collection(this.store, List.todo), result.task).catch(res => console.log('res', res));
         } else {
           if (result.task.id && list) {
             switch (result.op) {
