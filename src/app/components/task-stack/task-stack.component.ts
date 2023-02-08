@@ -1,10 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Task } from '../task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from '../task-dialog/task-dialog.component';
 import { Firestore, collection, addDoc, deleteDoc, doc, updateDoc, runTransaction } from '@angular/fire/firestore';
-import { getObservable } from '../../helpers/getObservable';
 import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
 import { IList } from 'src/app/types/types';
@@ -16,9 +15,10 @@ import { IList } from 'src/app/types/types';
 })
 export class TaskStackComponent {
   @Input() list: IList | null = null;
-  // todo = getObservable(collection(this.store, List.todo));
-  // inProgress = getObservable(collection(this.store, List.inProgress));
-  // done = getObservable(collection(this.store, List.done));
+  @Output() edit = new EventEmitter<IList>();
+  @Output() delete = new EventEmitter<IList>();
+  @Output() save = new EventEmitter<IList>();
+
   public ListTypes = List;
 
   constructor(private dialog: MatDialog, private store: Firestore) {
@@ -43,18 +43,18 @@ export class TaskStackComponent {
         if (result.op === TaskDialogOperation.create) {
           addDoc(collection(this.store, List.todo), result.task).catch(res => console.log('res', res));
         } else {
-          if (result.task.id && list) {
-            switch (result.op) {
-              case TaskDialogOperation.update:
-                updateDoc(doc(this.store, list, result.task.id), { ...result.task });
-                break;
-              case TaskDialogOperation.delete:
-                deleteDoc(doc(this.store, list, result.task.id));
-                break;
-              default:
-                break;
-            }
-          }
+          // if (result.task.id && list) {
+          //   switch (result.op) {
+          //     case TaskDialogOperation.update:
+          //       updateDoc(doc(this.store, list, result.task.id), { ...result.task });
+          //       break;
+          //     case TaskDialogOperation.delete:
+          //       deleteDoc(doc(this.store, list, result.task.id));
+          //       break;
+          //     default:
+          //       break;
+          //   }
+          // }
         }
       }
     });

@@ -1,8 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { List } from './../../app.component';
-import { Task } from '../task/task';
-import { IBoard, IList } from 'src/app/types/types';
+import { IBoard } from 'src/app/types/types';
 
 @Component({
   selector: 'app-board-dialog',
