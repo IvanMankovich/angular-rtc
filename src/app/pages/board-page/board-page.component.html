@@ -1,8 +1,9 @@
 <div>
+  <button mat-button (click)="openListModal()">Create list</button>
   <p *ngIf="board?.title">{{board?.title}}</p>
-  <p *ngIf="board?.lists">No lists yet.</p>
-  <button mat-button>Create list</button>
+  <p *ngIf="!board?.lists">No lists yet.</p>
 </div>
 
 <p *ngIf="loading">Loading.</p>
-<app-task-stack *ngFor="let list of lists" [list]="list"></app-task-stack>
+<app-task-stack *ngFor="let list of lists" [list]="list" [list]="list" (edit)="openListModal(list.id, list)"
+  (delete)="openBoardConfirmModal(list.id, list)"></app-task-stack>

@@ -45,6 +45,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { BoardDialogComponent } from './components/board-dialog/board-dialog.component';
 import { BoardCardComponent } from './components/board-card/board-card.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ListDialogComponent } from './components/list-dialog/list-dialog.component';
 
 @NgModule({
   imports: [
@@ -87,7 +88,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     FooterComponent,
     BoardDialogComponent,
     BoardCardComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ListDialogComponent
   ],
   bootstrap: [AppComponent]
 })
