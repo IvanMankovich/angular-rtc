@@ -1,6 +1,6 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IBoard, OperationType } from 'src/app/types/types';
+import { IBoard, IList, OperationType } from 'src/app/types/types';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -10,10 +10,12 @@ import { IBoard, OperationType } from 'src/app/types/types';
 export class ConfirmDialogComponent {
   @Input() title: string = '';
   @Input() description: string = '';
+  @Input() modalTitle: string = '';
+  @Input() modalDescription: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: BoardDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) { }
 
   cancel(): void {
@@ -21,27 +23,28 @@ export class ConfirmDialogComponent {
   }
 
   delete(): void {
-    const result: BoardDialogResult = {
+    const result: DialogResult = {
       ...this.data,
-      board: {
-        ...this.data.board,
-      },
       op: OperationType.delete,
-    }
+    };
+    console.log(result);
     this.dialogRef.close(result);
   }
 
   ngOnInit() {
-    this.title = this.data.board.title ?? '';
-    this.description = this.data.board.description ?? '';
+    this.title = this.data.item?.title ?? '';
+    this.description = this.data.item?.description ?? '';
+    this.modalTitle = this.data.modalTitle ?? '';
+    this.modalDescription = this.data.modalDescription ?? '';
   }
 }
 
-export interface BoardDialogData {
-  board: IBoard;
+export interface DialogData {
+  item?: IBoard | IList;
+  modalTitle?: string;
+  modalDescription?: string;
 }
 
-export interface BoardDialogResult {
-  board: IBoard;
+export interface DialogResult {
   op: OperationType;
 }

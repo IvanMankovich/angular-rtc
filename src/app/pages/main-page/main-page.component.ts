@@ -63,7 +63,6 @@ export class MainPageComponent implements OnInit {
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, boardDialogData);
     dialogRef.afterClosed().subscribe((result: BoardDialogResult) => {
-      console.log(result);
       if (!result) {
         return;
       } else {
