@@ -40,50 +40,50 @@ export class AppComponent implements OnInit {
 
   // lists$: Observable<ITaskStack[]>;
 
-  users$: Observable<any[]> = collectionData(collection(this.store, 'users'), { idField: 'id' }) as Observable<any[]>;
-  tasks$: Observable<any[]> = collectionData(collection(this.store, 'tasks'), { idField: 'id' }) as Observable<any[]>;
+  // users$: Observable<any[]> = collectionData(collection(this.store, 'users'), { idField: 'id' }) as Observable<any[]>;
+  // tasks$: Observable<any[]> = collectionData(collection(this.store, 'tasks'), { idField: 'id' }) as Observable<any[]>;
 
 
   public ListTypes = List;
 
   constructor(private dialog: MatDialog, private store: Firestore) {
     // console.log(this.lists);
-    console.log(this.users$)
+    // console.log(this.users$)
   }
 
   openTaskModal(list?: List, task?: Task): void {
-    const taskDialogData: ITaskDialogData = {
-      data: {
-        task: task ? task : {},
-      }
-    };
-    if (list) {
-      taskDialogData.data.enableDelete = list;
-    };
+    // const taskDialogData: ITaskDialogData = {
+    //   data: {
+    //     task: task ? task : {},
+    //   }
+    // };
+    // if (list) {
+    //   taskDialogData.data.enableDelete = list;
+    // };
 
-    const dialogRef = this.dialog.open(TaskDialogComponent, taskDialogData);
-    dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
-      if (!result) {
-        return;
-      } else {
-        if (result.op === TaskDialogOperation.create) {
-          addDoc(collection(this.store, List.todo), result.task);
-        } else {
-          if (result.task.id && list) {
-            switch (result.op) {
-              case TaskDialogOperation.update:
-                updateDoc(doc(this.store, list, result.task.id), { ...result.task });
-                break;
-              case TaskDialogOperation.delete:
-                deleteDoc(doc(this.store, list, result.task.id));
-                break;
-              default:
-                break;
-            }
-          }
-        }
-      }
-    });
+    // const dialogRef = this.dialog.open(TaskDialogComponent, taskDialogData);
+    // dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
+    //   if (!result) {
+    //     return;
+    //   } else {
+    //     if (result.op === TaskDialogOperation.create) {
+    //       addDoc(collection(this.store, List.todo), result.task);
+    //     } else {
+    //       if (result.task.id && list) {
+    //         switch (result.op) {
+    //           case TaskDialogOperation.update:
+    //             updateDoc(doc(this.store, list, result.task.id), { ...result.task });
+    //             break;
+    //           case TaskDialogOperation.delete:
+    //             deleteDoc(doc(this.store, list, result.task.id));
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   // drop(event: CdkDragDrop<Task[] | null>): void {

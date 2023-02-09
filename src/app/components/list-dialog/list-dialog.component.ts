@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { List } from './../../app.component';
-import { IList } from 'src/app/types/types';
+import { IList, OperationType } from 'src/app/types/types';
 
 @Component({
   selector: 'app-list-dialog',
@@ -12,11 +12,13 @@ export class ListDialogComponent {
   @Input() title: string = '';
   @Input() description: string = '';
   @Input() tasks: string[] = [];
+  @Input() modalTitle: string = '';
+  @Input() modalDescription: string = '';
 
-  public OperationTypes = ListDialogOperation;
+  public OperationTypes = OperationType;
   constructor(
     public dialogRef: MatDialogRef<ListDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ListDialogData,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
 
   }
@@ -28,19 +30,19 @@ export class ListDialogComponent {
   delete(): void {
     const result: ListDialogResult = {
       ...this.data,
-      list: {
-        ...this.data.list,
+      item: {
+        ...this.data.item,
       },
-      op: ListDialogOperation.delete,
+      op: OperationType.delete,
     }
     this.dialogRef.close(result);
   }
 
-  save(op: ListDialogOperation.create | ListDialogOperation.update): void {
+  save(op: OperationType.create | OperationType.update): void {
     const result: ListDialogResult = {
       ...this.data,
-      list: {
-        ...this.data.list,
+      item: {
+        ...this.data.item,
         title: this.title,
         description: this.description,
         tasks: this.tasks,
@@ -52,31 +54,31 @@ export class ListDialogComponent {
   }
 
   ngOnInit() {
-    this.title = this.data.list.title ?? '';
-    this.description = this.data.list.description ?? '';
-    this.tasks = this.data.list.tasks ?? [];
+    this.title = this.data.item?.title ?? '';
+    this.description = this.data.item?.description ?? '';
+    this.tasks = this.data.item?.tasks ?? [];
+    this.modalTitle = this.data.modalTitle ?? '';
+    this.modalDescription = this.data.modalDescription ?? '';
   }
 }
 
-export interface ListDialogData {
-  list: IList;
+export interface DialogData {
+  item: IList;
   enableDelete?: List;
+  modalTitle?: string;
+  modalDescription?: string;
 }
 
 export interface ListDialogResult {
-  list: IList;
-  op: ListDialogOperation;
-}
-
-export enum ListDialogOperation {
-  create = 'create',
-  update = 'update',
-  delete = 'delete',
+  item: IList;
+  op: OperationType;
 }
 
 export interface IListDialogData {
   data: {
-    list: IList | {},
+    item: IList | {},
     enableDelete?: any,
+    modalTitle?: string;
+    modalDescription?: string;
   }
 }
