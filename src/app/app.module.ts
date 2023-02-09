@@ -42,10 +42,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FooterComponent } from './components/footer/footer.component';
-import { BoardDialogComponent } from './components/board-dialog/board-dialog.component';
 import { BoardCardComponent } from './components/board-card/board-card.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { ListDialogComponent } from './components/list-dialog/list-dialog.component';
+import { CreateUpdateDialogComponent } from './components/create-update-dialog/create-update-dialog.component';
 
 @NgModule({
   imports: [
@@ -86,10 +85,9 @@ import { ListDialogComponent } from './components/list-dialog/list-dialog.compon
     HeaderComponent,
     MainContentComponent,
     FooterComponent,
-    BoardDialogComponent,
     BoardCardComponent,
     ConfirmDialogComponent,
-    ListDialogComponent
+    CreateUpdateDialogComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,6 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IBoard, IList, OperationType } from 'src/app/types/types';
+import { OperationType, DialogData, DialogResult } from 'src/app/types/types';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -37,14 +37,4 @@ export class ConfirmDialogComponent {
     this.modalTitle = this.data.modalTitle ?? '';
     this.modalDescription = this.data.modalDescription ?? '';
   }
-}
-
-export interface DialogData {
-  item?: IBoard | IList;
-  modalTitle?: string;
-  modalDescription?: string;
-}
-
-export interface DialogResult {
-  op: OperationType;
 }

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Firestore, addDoc, deleteDoc, doc, updateDoc, collection, } from '@angular/fire/firestore';
-import { IBoard, IBoardDialogData } from 'src/app/types/types';
+import { Collection, IBoard, OperationType } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
-import { BoardDialogComponent, BoardDialogOperation, BoardDialogResult } from 'src/app/components/board-dialog/board-dialog.component';
 import { onSnapshot } from '@firebase/firestore';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
+import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
+import { DialogResult, IDialogData } from 'src/app/types/types';
 
 @Component({
   selector: 'app-main-page',
@@ -13,37 +14,37 @@ import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confir
 })
 export class MainPageComponent implements OnInit {
   title: string = 'Main';
-  collectionName: string = 'boards';
   boards: IBoard[] = [];
   loading: boolean = true;
 
   constructor(private store: Firestore, private dialog: MatDialog) { }
 
   async openBoardModal(boardId?: string, board?: IBoard): Promise<void> {
-    const boardDialogData: IBoardDialogData = {
+    const boardDialogData: IDialogData = {
       data: {
-        board: board ? board : {},
-      }
+        item: board ? board as IBoard : {},
+        modalTitle: boardId ? `Edit board ${board?.title}` : 'Create new board',
+      },
     };
     if (boardId) {
       boardDialogData.data.enableDelete = boardId;
     };
 
-    const dialogRef = this.dialog.open(BoardDialogComponent, boardDialogData);
-    dialogRef.afterClosed().subscribe(async (result: BoardDialogResult) => {
+    const dialogRef = this.dialog.open(CreateUpdateDialogComponent, boardDialogData);
+    dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
       if (!result) {
         return;
       } else {
-        if (result.op === BoardDialogOperation.create) {
-          await addDoc(collection(this.store, this.collectionName), result.board);
+        if (result.op === OperationType.create) {
+          await addDoc(collection(this.store, Collection.boards), { ...result.item, lists: [] });
         } else {
-          if (result.board.id && boardId) {
+          if (result.item.id && boardId) {
             switch (result.op) {
-              case BoardDialogOperation.update:
-                updateDoc(doc(this.store, this.collectionName, result.board.id), { ...result.board });
+              case OperationType.update:
+                updateDoc(doc(this.store, Collection.boards, result.item.id), { ...result.item });
                 break;
-              case BoardDialogOperation.delete:
-                deleteDoc(doc(this.store, this.collectionName, result.board.id));
+              case OperationType.delete:
+                deleteDoc(doc(this.store, Collection.boards, result.item.id));
                 break;
               default:
                 break;
@@ -55,33 +56,23 @@ export class MainPageComponent implements OnInit {
   }
 
   openBoardConfirmModal(boardId?: string, board?: IBoard): void {
-    const boardDialogData: IBoardDialogData = {
+    const boardDialogData: IDialogData = {
       data: {
-        board: board ? board : {},
-      }
+        item: board ? board : {},
+      },
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, boardDialogData);
-    dialogRef.afterClosed().subscribe((result: BoardDialogResult) => {
-      if (!result) {
-        return;
-      } else {
-        if (result.board.id && boardId) {
-          switch (result.op) {
-            case BoardDialogOperation.delete:
-              deleteDoc(doc(this.store, this.collectionName, result.board.id));
-              break;
-            default:
-              break;
-          }
-        }
+    dialogRef.afterClosed().subscribe((result: DialogResult) => {
+      if (result?.item?.id && boardId && result.op === OperationType.delete) {
+        deleteDoc(doc(this.store, Collection.boards, result.item.id));
       }
     });
   }
 
   ngOnInit(): void {
     onSnapshot(
-      collection(this.store, this.collectionName),
+      collection(this.store, Collection.boards),
       (querySnapshot) => {
         const tempBoards: IBoard[] = [];
         querySnapshot.forEach((doc) => {
