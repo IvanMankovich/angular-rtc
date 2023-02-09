@@ -12,11 +12,8 @@
 </mat-form-field>
 
 <div mat-dialog-actions>
-  <button mat-button aria-label="data.enableDelete ? 'Save changes' : 'Create'"
-    (click)="save(data.enableDelete ? OperationTypes.update : OperationTypes.create)">{{data.enableDelete ?
+  <button mat-button aria-label="data.item.id ? 'Save changes' : 'Create'"
+    (click)="save(data.item.id ? OperationTypes.update : OperationTypes.create)">{{data.item.id ?
     'Save changes' : 'Create'}}</button>
   <button mat-button aria-label="Cancel" (click)="cancel()">Cancel</button>
-  <button mat-button *ngIf="data.enableDelete" (click)="delete()" color="primary" aria-label="Delete">
-    <mat-icon>delete</mat-icon>
-  </button>
 </div>

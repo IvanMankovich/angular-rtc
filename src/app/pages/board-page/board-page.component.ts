@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Firestore, addDoc, deleteDoc, updateDoc, collection, } from '@angular/fire/firestore';
-import { onSnapshot, query, where, getDocs, doc, DocumentReference, getDoc, documentId, arrayUnion, arrayRemove } from '@firebase/firestore';
-import { IBoard, IList, OperationType } from 'src/app/types/types';
-import { IListDialogData, ListDialogComponent, ListDialogResult } from 'src/app/components/list-dialog/list-dialog.component';
+import { onSnapshot, query, where, doc, documentId, arrayUnion, arrayRemove } from '@firebase/firestore';
+import { Collection, IBoard, IList, OperationType, DialogResult, IDialogData } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
+import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 
 
 @Component({
@@ -16,8 +16,6 @@ import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confir
 export class BoardPageComponent implements OnInit {
   title = 'Board';
   loading = false;
-  collectionName: string = 'boards';
-  listsCollectionName: string = 'lists';
   board: IBoard | null = null;
   lists: IList[] = [];
 
@@ -29,38 +27,37 @@ export class BoardPageComponent implements OnInit {
   ) { }
 
   async openListModal(listId?: string, list?: IList): Promise<void> {
-    const listDialogData: IListDialogData = {
+    const listDialogData: IDialogData = {
       data: {
         item: list ? list : {},
-        modalTitle: `Create new list`,
+        modalTitle: listId ? `Edit list ${list?.title}` : `Create new list`,
       },
     };
     if (listId) {
       listDialogData.data.enableDelete = listId;
     };
 
-    const dialogRef = this.dialog.open(ListDialogComponent, listDialogData);
-    dialogRef.afterClosed().subscribe(async (result: ListDialogResult) => {
+    const dialogRef = this.dialog.open(CreateUpdateDialogComponent, listDialogData);
+    dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
       if (!result || !this.board?.id) {
         return;
       } else {
         if (result.op === OperationType.create) {
-          console.log(result.item, this.board?.id);
           // create new list
-          const newList = await addDoc(collection(this.store, this.listsCollectionName), result.item);
+          const newList = await addDoc(collection(this.store, Collection.lists), result.item);
           // update board - add listRef to board
-          updateDoc(doc(this.store, this.collectionName, this.board.id), {
+          updateDoc(doc(this.store, Collection.boards, this.board.id), {
             lists: arrayUnion(newList.id),
           });
         } else {
           if (result.item.id && listId) {
             switch (result.op) {
               case OperationType.update:
-                updateDoc(doc(this.store, this.listsCollectionName, result.item.id), { ...result.item });
+                updateDoc(doc(this.store, Collection.lists, result.item.id), { ...result.item });
                 break;
               case OperationType.delete:
-                await deleteDoc(doc(this.store, this.collectionName, result.item.id));
-                updateDoc(doc(this.store, this.collectionName, this.board.id), {
+                await deleteDoc(doc(this.store, Collection.boards, result.item.id));
+                updateDoc(doc(this.store, Collection.boards, this.board.id), {
                   lists: arrayRemove(result.item.id),
                 });
                 // TODO: delete tasks
@@ -75,7 +72,7 @@ export class BoardPageComponent implements OnInit {
   }
 
   openBoardConfirmModal(listId?: string, list?: IList): void {
-    const dialogData: IListDialogData = {
+    const dialogData: IDialogData = {
       data: {
         item: list ? list : {},
         modalTitle: `Remove list`,
@@ -84,16 +81,15 @@ export class BoardPageComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogData);
-    dialogRef.afterClosed().subscribe((result: ListDialogResult) => {
-      console.log(result);
+    dialogRef.afterClosed().subscribe((result: DialogResult) => {
       if (!result) {
         return;
       } else {
         if (result.item.id && listId && this.board?.id) {
           switch (result.op) {
             case OperationType.delete:
-              deleteDoc(doc(this.store, this.listsCollectionName, result.item.id));
-              updateDoc(doc(this.store, this.collectionName, this.board.id), {
+              deleteDoc(doc(this.store, Collection.lists, result.item.id));
+              updateDoc(doc(this.store, Collection.boards, this.board.id), {
                 lists: arrayRemove(result.item.id),
               });
               // TODO: delete tasks
@@ -114,26 +110,31 @@ export class BoardPageComponent implements OnInit {
       this.loading = false;
       this.router.navigate(['/']);
     } else {
-      onSnapshot(doc(this.store, this.collectionName, boardIdFromRoute), (querySnapshot) => {
+      onSnapshot(doc(this.store, Collection.boards, boardIdFromRoute), (querySnapshot) => {
         if (querySnapshot.exists()) {
           this.board = { ...querySnapshot?.data?.(), id: querySnapshot.id } as IBoard;
 
-          const listsQuery = query(collection(this.store, this.listsCollectionName), where(documentId(), 'in', this.board.lists));
-          onSnapshot(listsQuery, (querySnapshot) => {
-            const tempLists: IList[] = [];
-            querySnapshot.forEach((doc) => {
-              tempLists.push({
-                id: doc.id,
-                ...doc.data(),
-              } as IList);
-            });
-            this.lists = tempLists;
-            this.loading = false;
-          },
-            (error) => {
+          if (this.board.lists.length) {
+            const listsQuery = query(collection(this.store, Collection.lists), where(documentId(), 'in', this.board.lists));
+            onSnapshot(listsQuery, (querySnapshot) => {
+              const tempLists: IList[] = [];
+              querySnapshot.forEach((doc) => {
+                tempLists.push({
+                  id: doc.id,
+                  ...doc.data(),
+                } as IList);
+              });
+              this.lists = tempLists;
               this.loading = false;
-              console.error(error);
-            })
+            },
+              (error) => {
+                this.loading = false;
+                console.error(error);
+              }
+            );
+          } else {
+            this.loading = false;
+          }
         } else {
           this.loading = false;
           this.router.navigate(['/']);
