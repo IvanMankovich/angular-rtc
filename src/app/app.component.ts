@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Task } from './components/task/task';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from './components/task-dialog/task-dialog.component';
@@ -8,6 +7,7 @@ import { getObservable } from './helpers/getObservable';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ITaskStack } from './components/task-stack/task-stack.component';
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { ITask } from './types/types';
 
 @Component({
   selector: 'app-root',
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
     // console.log(this.users$)
   }
 
-  openTaskModal(list?: List, task?: Task): void {
+  openTaskModal(list?: List, task?: ITask): void {
     // const taskDialogData: ITaskDialogData = {
     //   data: {
     //     task: task ? task : {},
@@ -106,7 +106,7 @@ export class AppComponent implements OnInit {
   //   );
   // }
 
-  drop(event: CdkDragDrop<BehaviorSubject<Task[]> | null>): void {
+  drop(event: CdkDragDrop<BehaviorSubject<ITask[]> | null>): void {
     if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
       return;
     }

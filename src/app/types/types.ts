@@ -10,12 +10,13 @@ export interface IList {
   title: string;
   description?: string;
   tasks: string[];
+  tasksRefs: ITask[];
 }
 
 export interface ITask {
   id: string;
-  taskTitle: string;
-  taskDescription: string;
+  title: string;
+  description?: string;
   complete: boolean;
 }
 

@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Task } from './task';
+import { ITask } from 'src/app/types/types';
 
 @Component({
   selector: 'app-task',
@@ -7,8 +7,9 @@ import { Task } from './task';
   styleUrls: ['./task.component.css']
 })
 export class TaskComponent {
-  @Input() task: Task | null = null;
-  @Output() edit = new EventEmitter<Task>();
-  @Output() delete = new EventEmitter<Task>();
-  @Output() save = new EventEmitter<Task>();
+  @Input() task: ITask | null = null;
+  @Output() edit = new EventEmitter<ITask>();
+  @Output() delete = new EventEmitter<ITask>();
+  @Output() save = new EventEmitter<ITask>();
+  checked = true;
 }
