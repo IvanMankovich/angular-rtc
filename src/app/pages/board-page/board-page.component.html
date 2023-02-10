@@ -5,5 +5,5 @@
   <p *ngIf="!board?.lists?.length">No lists yet.</p>
 </div>
 
-<app-task-stack *ngFor="let list of lists" [list]="list" [list]="list" (edit)="openListModal(list.id, list)"
+<app-task-stack *ngFor="let list of lists" [list]="list" (edit)="openListModal(list.id, list)"
   (delete)="openBoardConfirmModal(list.id, list)"></app-task-stack>

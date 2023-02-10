@@ -1,4 +1,3 @@
-import { Task } from './../components/task/task';
 import { CollectionReference, DocumentData, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { IBoard } from '../types/types';

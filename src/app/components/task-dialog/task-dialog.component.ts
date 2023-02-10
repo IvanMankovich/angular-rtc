@@ -1,7 +1,7 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { ITask } from 'src/app/types/types';
 import { List } from './../../app.component';
-import { Task } from '../task/task';
 
 @Component({
   selector: 'app-task-dialog',
@@ -55,12 +55,12 @@ export class TaskDialogComponent {
 }
 
 export interface TaskDialogData {
-  task: Task;
+  task: ITask;
   enableDelete?: List;
 }
 
 export interface TaskDialogResult {
-  task: Task;
+  task: ITask;
   op: TaskDialogOperation;
 }
 
@@ -72,7 +72,7 @@ export enum TaskDialogOperation {
 
 export interface ITaskDialogData {
   data: {
-    task: Task | {},
+    task: ITask | {},
     enableDelete?: List,
   }
 }

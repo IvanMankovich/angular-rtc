@@ -10,6 +10,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
@@ -71,6 +72,7 @@ import { CreateUpdateDialogComponent } from './components/create-update-dialog/c
     MatButtonToggleModule,
     MatSidenavModule,
     AppRoutingModule,
+    MatCheckboxModule,
   ],
   declarations: [
     AppComponent,

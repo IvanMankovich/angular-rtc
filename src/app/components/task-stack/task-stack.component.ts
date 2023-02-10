@@ -1,31 +1,28 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Task } from '../task/task';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from '../task-dialog/task-dialog.component';
-import { Firestore, collection, addDoc, deleteDoc, doc, updateDoc, runTransaction } from '@angular/fire/firestore';
+import { Firestore, addDoc, deleteDoc, updateDoc, collection, } from '@angular/fire/firestore';
+import { onSnapshot, query, where, doc, documentId, arrayUnion, arrayRemove, runTransaction } from '@firebase/firestore';
 import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
-import { IList } from 'src/app/types/types';
+import { Collection, IList, ITask } from 'src/app/types/types';
 
 @Component({
   selector: 'app-task-stack',
   templateUrl: './task-stack.component.html',
   styleUrls: ['./task-stack.component.css']
 })
-export class TaskStackComponent {
+export class TaskStackComponent implements OnInit {
   @Input() list: IList | null = null;
   @Output() edit = new EventEmitter<IList>();
   @Output() delete = new EventEmitter<IList>();
   @Output() save = new EventEmitter<IList>();
+  tasks: ITask[] = [];
 
-  public ListTypes = List;
+  constructor(private dialog: MatDialog, private store: Firestore) { console.log(this.list) }
 
-  constructor(private dialog: MatDialog, private store: Firestore) {
-    console.log(this.list);
-  }
-
-  openTaskModal(list?: List, task?: Task): void {
+  openTaskModal(list?: List, task?: ITask): void {
     const taskDialogData: ITaskDialogData = {
       data: {
         task: task ? task : {},
@@ -41,7 +38,7 @@ export class TaskStackComponent {
         return;
       } else {
         if (result.op === TaskDialogOperation.create) {
-          addDoc(collection(this.store, List.todo), result.task).catch(res => console.log('res', res));
+          // addDoc(collection(this.store, List.todo), result.task).catch(res => console.log('res', res));
         } else {
           // if (result.task.id && list) {
           //   switch (result.op) {
@@ -60,7 +57,8 @@ export class TaskStackComponent {
     });
   }
 
-  drop(event: CdkDragDrop<BehaviorSubject<Task[]> | null>): void {
+  drop(event: CdkDragDrop<ITask[]>): void {
+    console.log(event.previousContainer, event.container, !event.previousContainer.data, !event.container.data)
     if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
       return;
     }
@@ -79,10 +77,33 @@ export class TaskStackComponent {
     //   event.currentIndex
     // );
   }
+
+  ngOnInit(): void {
+    console.log(this.list);
+    if (this.list?.tasks?.length) {
+      const listsQuery = query(collection(this.store, Collection.tasks), where(documentId(), 'in', this.list?.tasks));
+      onSnapshot(
+        listsQuery,
+        (querySnapshot) => {
+          const tempLists: ITask[] = [];
+          querySnapshot.forEach((doc) => {
+            tempLists.push({
+              id: doc.id,
+              ...doc.data(),
+            } as ITask);
+          });
+          this.tasks = tempLists;
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+    }
+  }
 }
 
 export interface ITaskStack {
   listId: string,
   listName: string,
-  listItems: BehaviorSubject<Task[]>,
+  listItems: BehaviorSubject<ITask[]>,
 }

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Firestore, addDoc, deleteDoc, updateDoc, collection, } from '@angular/fire/firestore';
-import { onSnapshot, query, where, doc, documentId, arrayUnion, arrayRemove } from '@firebase/firestore';
-import { Collection, IBoard, IList, OperationType, DialogResult, IDialogData } from 'src/app/types/types';
+import { onSnapshot, query, where, doc, documentId, arrayUnion, arrayRemove, runTransaction } from '@firebase/firestore';
+import { Collection, IBoard, IList, OperationType, DialogResult, IDialogData, ITask } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
-
+import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-board-page',
@@ -102,6 +102,26 @@ export class BoardPageComponent implements OnInit {
     });
   }
 
+  drop(event: CdkDragDrop<IList[] | null>): void {
+    if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
+      return;
+    }
+    const item = event.previousContainer.data[event.previousIndex];
+    // runTransaction(this.store, () => {
+    //   const promise = Promise.all([
+    //     deleteDoc(doc(this.store, event.previousContainer.id, item.id as string)),
+    //     addDoc(collection(this.store, event.container.id), item),
+    //   ]);
+    //   return promise;
+    // });
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
+  }
+
   ngOnInit(): void {
     const routeParams = this.activatedRoute.snapshot.paramMap;
     const boardIdFromRoute = routeParams.get('boardId') || '';
@@ -116,17 +136,60 @@ export class BoardPageComponent implements OnInit {
 
           if (this.board.lists.length) {
             const listsQuery = query(collection(this.store, Collection.lists), where(documentId(), 'in', this.board.lists));
-            onSnapshot(listsQuery, (querySnapshot) => {
-              const tempLists: IList[] = [];
-              querySnapshot.forEach((doc) => {
-                tempLists.push({
-                  id: doc.id,
-                  ...doc.data(),
-                } as IList);
-              });
-              this.lists = tempLists;
-              this.loading = false;
-            },
+            onSnapshot(
+              listsQuery,
+              (querySnapshot) => {
+                const tempLists: IList[] = [];
+                const taskIds: string[] = [];
+                querySnapshot.forEach((doc) => {
+                  const list = {
+                    id: doc.id,
+                    ...doc.data(),
+                    tasksRefs: [] as ITask[],
+                  } as IList;
+                  tempLists.push(list);
+                  if (list.tasks?.length) {
+                    taskIds.push(...list.tasks);
+                  }
+                });
+                if (taskIds.length) {
+                  const listsQuery = query(collection(this.store, Collection.tasks), where(documentId(), 'in', taskIds));
+                  onSnapshot(
+                    listsQuery,
+                    (querySnapshot) => {
+                      const tasksList: ITask[] = [];
+                      querySnapshot.forEach((doc) => {
+                        const list = {
+                          id: doc.id,
+                          ...doc.data(),
+                        } as ITask;
+                        tasksList.push(list);
+                      });
+
+                      const lists: IList[] = [...tempLists];
+                      tempLists.forEach((list, listInd) => {
+                        list.tasks.forEach((task) => {
+                          let tt = tasksList.find((tempTask) => tempTask.id === task);
+                          if (tt) {
+                            lists[listInd].tasksRefs.push(tt);
+                          }
+                        })
+                      });
+
+                      this.lists = lists;
+
+                      this.loading = false;
+                    },
+                    (error) => {
+                      this.loading = false;
+                      console.error(error);
+                    }
+                  );
+                } else {
+                  this.lists = tempLists;
+                  this.loading = false;
+                }
+              },
               (error) => {
                 this.loading = false;
                 console.error(error);
