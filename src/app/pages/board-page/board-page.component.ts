@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ITaskDialogData, TaskDialogComponent, TaskDialogResult } from 'src/app/components/task-dialog/task-dialog.component';
 
 @Component({
   selector: 'app-board-page',
@@ -102,25 +103,25 @@ export class BoardPageComponent implements OnInit {
     });
   }
 
-  drop(event: CdkDragDrop<IList[] | null>): void {
-    if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
-      return;
-    }
-    const item = event.previousContainer.data[event.previousIndex];
-    // runTransaction(this.store, () => {
-    //   const promise = Promise.all([
-    //     deleteDoc(doc(this.store, event.previousContainer.id, item.id as string)),
-    //     addDoc(collection(this.store, event.container.id), item),
-    //   ]);
-    //   return promise;
-    // });
-    transferArrayItem(
-      event.previousContainer.data,
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    );
-  }
+  // drop(event: CdkDragDrop<IList[] | null>): void {
+  //   if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
+  //     return;
+  //   }
+  //   const item = event.previousContainer.data[event.previousIndex];
+  //   // runTransaction(this.store, () => {
+  //   //   const promise = Promise.all([
+  //   //     deleteDoc(doc(this.store, event.previousContainer.id, item.id as string)),
+  //   //     addDoc(collection(this.store, event.container.id), item),
+  //   //   ]);
+  //   //   return promise;
+  //   // });
+  //   transferArrayItem(
+  //     event.previousContainer.data,
+  //     event.container.data,
+  //     event.previousIndex,
+  //     event.currentIndex
+  //   );
+  // }
 
   ngOnInit(): void {
     const routeParams = this.activatedRoute.snapshot.paramMap;
@@ -146,6 +147,7 @@ export class BoardPageComponent implements OnInit {
                     id: doc.id,
                     ...doc.data(),
                     tasksRefs: [] as ITask[],
+                    otherListsTasksRefs: [] as ITask[][],
                   } as IList;
                   tempLists.push(list);
                   if (list.tasks?.length) {
@@ -169,7 +171,7 @@ export class BoardPageComponent implements OnInit {
                       const lists: IList[] = [...tempLists];
                       tempLists.forEach((list, listInd) => {
                         list.tasks.forEach((task) => {
-                          let tt = tasksList.find((tempTask) => tempTask.id === task);
+                          const tt = tasksList.find((tempTask) => tempTask.id === task);
                           if (tt) {
                             lists[listInd].tasksRefs.push(tt);
                           }
@@ -177,7 +179,7 @@ export class BoardPageComponent implements OnInit {
                       });
 
                       this.lists = lists;
-
+                      console.log(lists);
                       this.loading = false;
                     },
                     (error) => {
@@ -208,5 +210,9 @@ export class BoardPageComponent implements OnInit {
           console.error(error);
         });
     }
+  }
+
+  getListsConnectedTo(id?: string): string[] {
+    return this.lists.filter((list) => list.id !== id).map((l) => l.id);
   }
 }

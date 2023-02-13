@@ -1,0 +1,86 @@
+.two-column-group {
+  display: block;
+  width: 100%;
+  white-space: normal;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group {
+    margin-top: 0;
+  }
+}
+
+.two-column-group .two-column-group-item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box
+}
+
+.two-column-group .two-column-group-item:not(:first-child) {
+  margin-top: 8px
+}
+
+.two-column-group .two-column-group-item:nth-child(even) {
+  display: inline-block;
+  width: 50%;
+  box-sizing: border-box;
+  padding-left: 8px
+}
+
+.two-column-group .two-column-group-item:nth-child(odd) {
+  display: inline-block;
+  width: 50%;
+  box-sizing: border-box;
+  padding-right: 8px
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+1) {
+    display: inline-block;
+    width: calc(33.3333333333% - 16px);
+    box-sizing: border-box;
+    padding: 0;
+    margin-right: 12px
+  }
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+1) {
+    margin-top: 40px
+  }
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+2) {
+    display: inline-block;
+    width: calc(33.3333333333% - 16px);
+    box-sizing: border-box;
+    padding: 0;
+    margin-left: 12px;
+    margin-right: 12px
+  }
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+2) {
+    margin-top: 40px
+  }
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+3) {
+    display: inline-block;
+    width: calc(33.3333333333% - 16px);
+    box-sizing: border-box;
+    padding: 0;
+    margin-left: 12px
+  }
+}
+
+@media screen and (min-width: 680px) {
+  .two-column-group .two-column-group-item:nth-child(3n+3) {
+    margin-top: 40px
+  }
+}

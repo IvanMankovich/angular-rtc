@@ -1,0 +1,11 @@
+.cdk-drag-animating {
+  transition: transform 250ms;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+:host {
+  display: block;
+}

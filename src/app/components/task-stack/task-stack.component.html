@@ -14,10 +14,10 @@
     </mat-card-actions>
   </mat-card-header>
 
-  <mat-card cdkDropList id="list.id" #{{list?.id}}="cdkDropList" [cdkDropListData]="tasks"
-    (cdkDropListDropped)="drop($event)" class="list">
+  <mat-card cdkDropList id={{list?.id}} #{{list?.tasksRefs}}="cdkDropList" [cdkDropListData]="list?.tasksRefs"
+    [cdkDropListConnectedTo]="cdkDropListConnectedTo" (cdkDropListDropped)="drop($event)" class="list">
     <p class="empty-label" *ngIf="!list?.tasks?.length">Empty list</p>
-    <app-task (edit)="openTaskModal()" *ngFor="let task of tasks" cdkDrag [task]="task">
+    <app-task (edit)="openTaskModal()" *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task">
     </app-task>
   </mat-card>
 
