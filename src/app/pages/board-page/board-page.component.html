@@ -1,9 +1,12 @@
 <div>
   <button mat-button (click)="openListModal()">Create list</button>
-  <p *ngIf="board?.title">{{board?.title}}</p>
-  <p *ngIf="loading">Loading.</p>
-  <p *ngIf="!board?.lists?.length">No lists yet.</p>
+  <p *ngIf="board?.title">Current board: {{board?.title}}</p>
 </div>
 
-<app-task-stack *ngFor="let list of lists" [list]="list" (edit)="openListModal(list.id, list)"
-  (delete)="openBoardConfirmModal(list.id, list)"></app-task-stack>
+<div class="two-column-group">
+  <p *ngIf="loading">Loading.</p>
+  <p *ngIf="!board?.lists?.length">No lists yet.</p>
+  <app-task-stack *ngFor="let list of lists" [list]="list" (edit)="openListModal(list.id, list)"
+    (delete)="openBoardConfirmModal(list.id, list)" class="two-column-group-item"
+    [cdkDropListConnectedTo]="getListsConnectedTo(list.id)"></app-task-stack>
+</div>

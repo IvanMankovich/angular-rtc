@@ -11,6 +11,7 @@ export interface IList {
   description?: string;
   tasks: string[];
   tasksRefs: ITask[];
+  otherListsTasksRefs: ITask[][];
 }
 
 export interface ITask {

@@ -15,12 +15,13 @@ import { Collection, IList, ITask } from 'src/app/types/types';
 })
 export class TaskStackComponent implements OnInit {
   @Input() list: IList | null = null;
+  @Input() cdkDropListConnectedTo: any = [];
   @Output() edit = new EventEmitter<IList>();
   @Output() delete = new EventEmitter<IList>();
   @Output() save = new EventEmitter<IList>();
-  tasks: ITask[] = [];
+  // tasks: ITask[] = [];
 
-  constructor(private dialog: MatDialog, private store: Firestore) { console.log(this.list) }
+  constructor(private dialog: MatDialog, private store: Firestore) { }
 
   openTaskModal(list?: List, task?: ITask): void {
     const taskDialogData: ITaskDialogData = {
@@ -57,8 +58,8 @@ export class TaskStackComponent implements OnInit {
     });
   }
 
-  drop(event: CdkDragDrop<ITask[]>): void {
-    console.log(event.previousContainer, event.container, !event.previousContainer.data, !event.container.data)
+  drop(event: CdkDragDrop<ITask[] | undefined>): void {
+    console.log(event.previousContainer === event.container, event.previousContainer, event.container, event.previousContainer.data, event.container.data)
     if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
       return;
     }
@@ -70,35 +71,35 @@ export class TaskStackComponent implements OnInit {
     //   ]);
     //   return promise;
     // });
-    // transferArrayItem(
-    //   event.previousContainer.data,
-    //   event.container.data,
-    //   event.previousIndex,
-    //   event.currentIndex
-    // );
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   ngOnInit(): void {
-    console.log(this.list);
-    if (this.list?.tasks?.length) {
-      const listsQuery = query(collection(this.store, Collection.tasks), where(documentId(), 'in', this.list?.tasks));
-      onSnapshot(
-        listsQuery,
-        (querySnapshot) => {
-          const tempLists: ITask[] = [];
-          querySnapshot.forEach((doc) => {
-            tempLists.push({
-              id: doc.id,
-              ...doc.data(),
-            } as ITask);
-          });
-          this.tasks = tempLists;
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    }
+    console.log(this.list?.id);
+    // if (this.list?.tasks?.length) {
+    //   const listsQuery = query(collection(this.store, Collection.tasks), where(documentId(), 'in', this.list?.tasks));
+    //   onSnapshot(
+    //     listsQuery,
+    //     (querySnapshot) => {
+    //       const tempLists: ITask[] = [];
+    //       querySnapshot.forEach((doc) => {
+    //         tempLists.push({
+    //           id: doc.id,
+    //           ...doc.data(),
+    //         } as ITask);
+    //       });
+    //       this.tasks = tempLists;
+    //     },
+    //     (error) => {
+    //       console.error(error);
+    //     }
+    //   );
+    // }
   }
 }
 
