@@ -2,7 +2,7 @@ mat-toolbar {
   margin-bottom: 20px;
 }
 
-mat-toolbar>span {
+mat-toolbar > span {
   margin-left: 10px;
 }
 
@@ -44,4 +44,16 @@ app-new-task {
 
 .cdk-drag-placeholder {
   opacity: 0;
+}
+
+.layout {
+  align-items: center;
+  display: flex;
+  flex: 1 0;
+  flex-direction: column;
+  font: 1em Arial, Helvetica, sans-serif;
+  justify-content: flex-start;
+  line-height: 1.5em;
+  min-height: 100vh;
+  min-width: 100%;
 }

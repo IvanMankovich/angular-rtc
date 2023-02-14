@@ -1,9 +1,18 @@
-<mat-toolbar class="">
-  <mat-icon>assignment</mat-icon>
-  <span>Todo</span>
-  <button mat-button [matMenuTriggerFor]="menu">Menu</button>
-  <mat-menu #menu="matMenu">
-    <a routerLink="/"><button mat-menu-item>Main</button></a>
-    <a routerLink="/about"><button mat-menu-item>About</button></a>
-  </mat-menu>
-</mat-toolbar>
+<div class="header">
+  <div class="main-menu">
+    <mat-icon>assignment</mat-icon>
+    <h1 class="title">Todo</h1>
+    <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+    <mat-menu #menu="matMenu">
+      <a routerLink="/"><button mat-menu-item>Main</button></a>
+      <a routerLink="/about"><button mat-menu-item>About</button></a>
+    </mat-menu>
+  </div>
+  <div class="user-menu">
+    <button mat-button [matMenuTriggerFor]="menu">User</button>
+    <mat-menu #menu="matMenu">
+      <a routerLink="/"><button mat-menu-item>Main</button></a>
+      <a routerLink="/about"><button mat-menu-item>Log out</button></a>
+    </mat-menu>
+  </div>
+</div>

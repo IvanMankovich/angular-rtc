@@ -6,11 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./layout.component.css'],
 })
 export class LayoutComponent implements OnInit {
-  constructor() { }
+  constructor() {}
   showFiller = false;
   isSideNavOpen = true;
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   toggleSideNav(): void {
     this.isSideNavOpen = !this.isSideNavOpen;

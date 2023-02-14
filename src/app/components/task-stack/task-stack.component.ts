@@ -1,9 +1,29 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from '../task-dialog/task-dialog.component';
-import { Firestore, addDoc, deleteDoc, updateDoc, collection, } from '@angular/fire/firestore';
-import { onSnapshot, query, where, doc, documentId, arrayUnion, arrayRemove, runTransaction } from '@firebase/firestore';
+import {
+  TaskDialogResult,
+  TaskDialogComponent,
+  ITaskDialogData,
+  TaskDialogOperation,
+} from '../task-dialog/task-dialog.component';
+import {
+  Firestore,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  collection,
+} from '@angular/fire/firestore';
+import {
+  onSnapshot,
+  query,
+  where,
+  doc,
+  documentId,
+  arrayUnion,
+  arrayRemove,
+  runTransaction,
+} from '@firebase/firestore';
 import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
 import { Collection, IList, ITask } from 'src/app/types/types';
@@ -11,7 +31,7 @@ import { Collection, IList, ITask } from 'src/app/types/types';
 @Component({
   selector: 'app-task-stack',
   templateUrl: './task-stack.component.html',
-  styleUrls: ['./task-stack.component.css']
+  styleUrls: ['./task-stack.component.css'],
 })
 export class TaskStackComponent implements OnInit {
   @Input() list: IList | null = null;
@@ -21,17 +41,17 @@ export class TaskStackComponent implements OnInit {
   @Output() save = new EventEmitter<IList>();
   // tasks: ITask[] = [];
 
-  constructor(private dialog: MatDialog, private store: Firestore) { }
+  constructor(private dialog: MatDialog, private store: Firestore) {}
 
   openTaskModal(list?: List, task?: ITask): void {
     const taskDialogData: ITaskDialogData = {
       data: {
         task: task ? task : {},
-      }
+      },
     };
     if (list) {
       taskDialogData.data.enableDelete = list;
-    };
+    }
 
     const dialogRef = this.dialog.open(TaskDialogComponent, taskDialogData);
     dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
@@ -59,19 +79,32 @@ export class TaskStackComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<ITask[] | undefined>): void {
-    console.log(event.previousContainer === event.container, event.previousContainer, event.container, event.previousContainer.data, event.container.data)
-    if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
+    console.log(
+      event.previousContainer === event.container,
+      event.previousContainer,
+      event.container,
+      event.previousContainer.data,
+      event.container.data
+    );
+    if (
+      event.previousContainer === event.container ||
+      !event.previousContainer.data ||
+      !event.container.data
+    ) {
       return;
     }
     const item = event.previousContainer.data[event.previousIndex];
     runTransaction(this.store, () => {
       const promise = Promise.all([
-        updateDoc(doc(this.store, Collection.lists, event.previousContainer.id), {
-          tasks: arrayRemove(item.id),
-        }),
+        updateDoc(
+          doc(this.store, Collection.lists, event.previousContainer.id),
+          {
+            tasks: arrayRemove(item.id),
+          }
+        ),
         updateDoc(doc(this.store, Collection.lists, event.container.id), {
           tasks: arrayUnion(item.id),
-        })
+        }),
       ]);
       return promise;
     });
@@ -108,7 +141,7 @@ export class TaskStackComponent implements OnInit {
 }
 
 export interface ITaskStack {
-  listId: string,
-  listName: string,
-  listItems: BehaviorSubject<ITask[]>,
+  listId: string;
+  listName: string;
+  listItems: BehaviorSubject<ITask[]>;
 }

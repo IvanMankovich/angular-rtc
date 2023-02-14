@@ -34,11 +34,11 @@ export interface DialogResult {
 
 export interface IDialogData {
   data: {
-    item: IList | IBoard | {},
-    enableDelete?: any,
+    item: IList | IBoard | {};
+    enableDelete?: any;
     modalTitle?: string;
     modalDescription?: string;
-  }
+  };
 }
 
 export enum OperationType {

@@ -4,6 +4,10 @@
 </div>
 
 <p *ngIf="loading">Loading.</p>
-<app-board-card *ngFor="let board of boards" [board]="board" (edit)="openBoardModal(board.id, board)"
-  (delete)="openBoardConfirmModal(board.id, board)">
+<app-board-card
+  *ngFor="let board of boards"
+  [board]="board"
+  (edit)="openBoardModal(board.id, board)"
+  (delete)="openBoardConfirmModal(board.id, board)"
+>
 </app-board-card>

@@ -89,8 +89,8 @@ import { CreateUpdateDialogComponent } from './components/create-update-dialog/c
     FooterComponent,
     BoardCardComponent,
     ConfirmDialogComponent,
-    CreateUpdateDialogComponent
+    CreateUpdateDialogComponent,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
