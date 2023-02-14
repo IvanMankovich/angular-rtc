@@ -63,14 +63,18 @@ export class TaskStackComponent implements OnInit {
     if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
       return;
     }
-    // const item = event.previousContainer.data[event.previousIndex];
-    // runTransaction(this.store, () => {
-    //   const promise = Promise.all([
-    //     deleteDoc(doc(this.store, event.previousContainer.id, item.id as string)),
-    //     addDoc(collection(this.store, event.container.id), item),
-    //   ]);
-    //   return promise;
-    // });
+    const item = event.previousContainer.data[event.previousIndex];
+    runTransaction(this.store, () => {
+      const promise = Promise.all([
+        updateDoc(doc(this.store, Collection.lists, event.previousContainer.id), {
+          tasks: arrayRemove(item.id),
+        }),
+        updateDoc(doc(this.store, Collection.lists, event.container.id), {
+          tasks: arrayUnion(item.id),
+        })
+      ]);
+      return promise;
+    });
     transferArrayItem(
       event.previousContainer.data,
       event.container.data,
