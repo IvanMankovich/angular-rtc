@@ -5,7 +5,7 @@ import { OperationType, DialogData, DialogResult } from 'src/app/types/types';
 @Component({
   selector: 'app-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
-  styleUrls: ['./confirm-dialog.component.css']
+  styleUrls: ['./confirm-dialog.component.css'],
 })
 export class ConfirmDialogComponent {
   @Input() title: string = '';
@@ -15,8 +15,8 @@ export class ConfirmDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {}
 
   cancel(): void {
     this.dialogRef.close();

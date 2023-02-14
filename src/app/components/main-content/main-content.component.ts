@@ -7,9 +7,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class MainContentComponent implements OnInit {
   @Output() changeEmitter = new EventEmitter<void>();
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   onChange(): void {
     this.changeEmitter.emit();

@@ -1,12 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import { TaskDialogResult, TaskDialogComponent, ITaskDialogData, TaskDialogOperation } from './components/task-dialog/task-dialog.component';
-import { Firestore, addDoc, deleteDoc, doc, updateDoc, runTransaction, collectionGroup, collectionData } from '@angular/fire/firestore';
+import {
+  TaskDialogResult,
+  TaskDialogComponent,
+  ITaskDialogData,
+  TaskDialogOperation,
+} from './components/task-dialog/task-dialog.component';
+import {
+  Firestore,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  runTransaction,
+  collectionGroup,
+  collectionData,
+} from '@angular/fire/firestore';
 import { getObservable } from './helpers/getObservable';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ITaskStack } from './components/task-stack/task-stack.component';
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { ITask } from './types/types';
 
 @Component({
@@ -43,7 +57,6 @@ export class AppComponent implements OnInit {
   // users$: Observable<any[]> = collectionData(collection(this.store, 'users'), { idField: 'id' }) as Observable<any[]>;
   // tasks$: Observable<any[]> = collectionData(collection(this.store, 'tasks'), { idField: 'id' }) as Observable<any[]>;
 
-
   public ListTypes = List;
 
   constructor(private dialog: MatDialog, private store: Firestore) {
@@ -60,7 +73,6 @@ export class AppComponent implements OnInit {
     // if (list) {
     //   taskDialogData.data.enableDelete = list;
     // };
-
     // const dialogRef = this.dialog.open(TaskDialogComponent, taskDialogData);
     // dialogRef.afterClosed().subscribe((result: TaskDialogResult) => {
     //   if (!result) {
@@ -107,7 +119,11 @@ export class AppComponent implements OnInit {
   // }
 
   drop(event: CdkDragDrop<BehaviorSubject<ITask[]> | null>): void {
-    if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
+    if (
+      event.previousContainer === event.container ||
+      !event.previousContainer.data ||
+      !event.container.data
+    ) {
       return;
     }
     // const item = event.previousContainer.data[event.previousIndex];
@@ -137,9 +153,6 @@ export class AppComponent implements OnInit {
     // });
 
     // console.log(aaa);
-
-
-
 
     // this.lists$ = [{
     //   listId: List.todo,

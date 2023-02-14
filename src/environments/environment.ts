@@ -8,5 +8,5 @@ export const environment = {
     authDomain: 'angular-rtc-b24b6.firebaseapp.com',
     messagingSenderId: '197992332896',
     measurementId: 'G-H93D46BF49',
-  }
-}
+  },
+};

@@ -1,12 +1,18 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { List } from './../../app.component';
-import { IBoard, IList, OperationType, DialogData, DialogResult } from 'src/app/types/types';
+import {
+  IBoard,
+  IList,
+  OperationType,
+  DialogData,
+  DialogResult,
+} from 'src/app/types/types';
 
 @Component({
   selector: 'app-create-update-dialog',
   templateUrl: './create-update-dialog.component.html',
-  styleUrls: ['./create-update-dialog.component.css']
+  styleUrls: ['./create-update-dialog.component.css'],
 })
 export class CreateUpdateDialogComponent {
   @Input() title: string = '';
@@ -17,8 +23,8 @@ export class CreateUpdateDialogComponent {
   public OperationTypes = OperationType;
   constructor(
     public dialogRef: MatDialogRef<CreateUpdateDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {}
 
   cancel(): void {
     this.dialogRef.close();
@@ -31,7 +37,7 @@ export class CreateUpdateDialogComponent {
         ...this.data.item,
       },
       op: OperationType.delete,
-    }
+    };
     this.dialogRef.close(result);
   }
 

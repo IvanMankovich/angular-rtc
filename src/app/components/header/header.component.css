@@ -1,0 +1,45 @@
+.header {
+  align-items: stretch;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: row;
+  height: auto;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+  position: relative;
+}
+
+@media screen and (min-width: 320px) {
+  .header {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 960px) {
+  .header {
+    max-width: 920px;
+  }
+}
+
+@media screen and (min-width: 1280px) {
+  .header {
+    max-width: 920px;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .header {
+    max-width: 1880px;
+  }
+}
+
+.header > .main-menu > .mat-icon {
+  vertical-align: middle;
+}
+
+.header > .main-menu > .title {
+  display: inline;
+  vertical-align: middle;
+}

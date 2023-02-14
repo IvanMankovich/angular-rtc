@@ -1,6 +1,6 @@
-<app-header (changeEmitter)="toggleSideNav()"></app-header>
+<app-header (changeEmitter)="toggleSideNav()" class="header-wrapper"></app-header>
 
-<app-main-content>
+<app-main-content class="main-content">
   <mat-drawer-container class="example-container" autosize>
     <mat-drawer #drawer class="example-sidenav" mode="side">
       <p>Auto-resizing sidenav</p>
@@ -10,19 +10,16 @@
       </button>
     </mat-drawer>
 
-    <div class="example-sidenav-content">
+    <mat-drawer-content class="example-sidenav-content">
       <router-outlet></router-outlet>
-      <!-- <button type="button" mat-button (click)="drawer.toggle()">
+      <button type="button" mat-button (click)="drawer.toggle()">
         Toggle sidenav
-      </button> -->
-    </div>
-
+      </button>
+    </mat-drawer-content>
   </mat-drawer-container>
 </app-main-content>
 
-<app-footer></app-footer>
-
-
+<app-footer class="footer"></app-footer>
 
 <!-- <app-main-content>
   <mat-drawer-container>

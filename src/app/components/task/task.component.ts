@@ -4,7 +4,7 @@ import { ITask } from 'src/app/types/types';
 @Component({
   selector: 'app-task',
   templateUrl: './task.component.html',
-  styleUrls: ['./task.component.css']
+  styleUrls: ['./task.component.css'],
 })
 export class TaskComponent {
   @Input() task: ITask | null = null;

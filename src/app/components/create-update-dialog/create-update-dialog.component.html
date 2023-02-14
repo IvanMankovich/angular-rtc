@@ -1,5 +1,5 @@
-<h1 mat-dialog-title>{{modalTitle}}</h1>
-<div mat-dialog-content>{{modalDescription}}</div>
+<h1 mat-dialog-title>{{ modalTitle }}</h1>
+<div mat-dialog-content>{{ modalDescription }}</div>
 
 <mat-form-field>
   <mat-label>Title</mat-label>
@@ -12,8 +12,12 @@
 </mat-form-field>
 
 <div mat-dialog-actions>
-  <button mat-button aria-label="data.item.id ? 'Save changes' : 'Create'"
-    (click)="save(data.item.id ? OperationTypes.update : OperationTypes.create)">{{data.item.id ?
-    'Save changes' : 'Create'}}</button>
+  <button
+    mat-button
+    aria-label="data.item.id ? 'Save changes' : 'Create'"
+    (click)="save(data.item.id ? OperationTypes.update : OperationTypes.create)"
+  >
+    {{ data.item.id ? "Save changes" : "Create" }}
+  </button>
   <button mat-button aria-label="Cancel" (click)="cancel()">Cancel</button>
 </div>

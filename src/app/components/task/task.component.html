@@ -1,7 +1,9 @@
 <mat-card class="item" *ngIf="task" (dblclick)="edit.emit(task)">
   <div>
     <h2>{{ task.title }}</h2>
-    <mat-checkbox class="example-margin" [(ngModel)]="checked">Checked</mat-checkbox>
+    <mat-checkbox class="example-margin" [(ngModel)]="checked"
+      >Checked</mat-checkbox
+    >
   </div>
   <p>
     {{ task.description }}

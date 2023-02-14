@@ -15,10 +15,8 @@ export class TaskDialogComponent {
   public OperationTypes = TaskDialogOperation;
   constructor(
     public dialogRef: MatDialogRef<TaskDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: TaskDialogData,
-  ) {
-
-  }
+    @Inject(MAT_DIALOG_DATA) public data: TaskDialogData
+  ) {}
 
   cancel(): void {
     this.dialogRef.close();
@@ -31,7 +29,7 @@ export class TaskDialogComponent {
         ...this.data.task,
       },
       op: TaskDialogOperation.delete,
-    }
+    };
     this.dialogRef.close(result);
   }
 
@@ -44,7 +42,7 @@ export class TaskDialogComponent {
         description: this.description,
       },
       op: op,
-    }
+    };
     this.dialogRef.close(result);
   }
 
@@ -72,7 +70,7 @@ export enum TaskDialogOperation {
 
 export interface ITaskDialogData {
   data: {
-    task: ITask | {},
-    enableDelete?: List,
-  }
+    task: ITask | {};
+    enableDelete?: List;
+  };
 }
