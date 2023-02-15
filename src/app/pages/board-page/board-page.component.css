@@ -1,4 +1,4 @@
-.two-column-group {
+/* .two-column-group {
   display: block;
   width: 100%;
   white-space: normal;
@@ -83,4 +83,31 @@
   .two-column-group .two-column-group-item:nth-child(3n + 3) {
     margin-top: 40px;
   }
+} */
+
+.board-func-panel {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0.5rem;
+  background-color: #c9c9c9;
+  width: 100%;
+  flex: 0 1 auto;
+  box-sizing: border-box;
+}
+
+.cards-panel {
+}
+
+.board-cards-panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.board-cards-panel-item {
+  margin: 8px;
 }
