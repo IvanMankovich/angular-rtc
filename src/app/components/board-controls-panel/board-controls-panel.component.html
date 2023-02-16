@@ -1,0 +1,9 @@
+<mat-toolbar class="board-controls-panel">
+  <button mat-button (click)="openListModal.emit()">Create list</button>
+  <div class="text-content">
+    <p class="board-controls-panel__text" *ngIf="title">Current board: <span class="board-controls-panel__text_bold">{{
+        title }}</span></p>
+    <p class="board-controls-panel__text" *ngIf="listsAmount !== null">Cards amount: <span
+        class="board-controls-panel__text_bold">{{ listsAmount }}</span></p>
+  </div>
+</mat-toolbar>

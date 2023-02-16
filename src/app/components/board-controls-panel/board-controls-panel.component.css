@@ -1,0 +1,32 @@
+.board-controls-panel {
+  flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #c9c9c9;
+  width: 100%;
+  flex: 0 1 auto;
+  box-sizing: border-box;
+  height: auto;
+}
+
+.text-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.board-controls-panel__text {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.board-controls-panel__text:not(:first-child) {
+  margin-left: 0.4rem;
+}
+
+.board-controls-panel__text_bold {
+  font-weight: bold;
+}

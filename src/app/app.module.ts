@@ -47,6 +47,8 @@ import { BoardCardComponent } from './components/board-card/board-card.component
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from './components/create-update-dialog/create-update-dialog.component';
 import { WorkspaceWrapperComponent } from './components/workspace-wrapper/workspace-wrapper.component';
+import { BoardControlsPanelComponent } from './components/board-controls-panel/board-controls-panel.component';
+import { BoardCardsPanelComponent } from './components/board-cards-panel/board-cards-panel.component';
 
 @NgModule({
   imports: [
@@ -92,6 +94,8 @@ import { WorkspaceWrapperComponent } from './components/workspace-wrapper/worksp
     ConfirmDialogComponent,
     CreateUpdateDialogComponent,
     WorkspaceWrapperComponent,
+    BoardControlsPanelComponent,
+    BoardCardsPanelComponent,
   ],
   bootstrap: [AppComponent],
 })
