@@ -1,14 +1,8 @@
 <app-workspace-wrapper>
-  <div class="board-func-panel">
-    <p *ngIf="board?.title">Current board: {{ board?.title }}</p>
-    <button mat-button (click)="openListModal()">Create list</button>
-  </div>
+  <app-board-controls-panel [title]="board?.title" [listsAmount]="lists.length" (openListModal)="openListModal()">
+  </app-board-controls-panel>
 
-  <div class="board-cards-panel">
-    <p *ngIf="loading">Loading.</p>
-    <p *ngIf="!board?.lists?.length">No lists yet.</p>
-    <app-task-stack *ngFor="let list of lists" [list]="list" (edit)="openListModal(list.id, list)"
-      (delete)="openBoardConfirmModal(list.id, list)" class="board-cards-panel-item"
-      [cdkDropListConnectedTo]="getListsConnectedTo(list.id)"></app-task-stack>
-  </div>
+  <app-board-cards-panel [loading]="loading" [lists]="lists" [openListModal]="openListModal"
+    [openBoardConfirmModal]="openBoardConfirmModal" [getListsConnectedTo]="getListsConnectedTo">
+  </app-board-cards-panel>
 </app-workspace-wrapper>
