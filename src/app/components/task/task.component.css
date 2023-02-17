@@ -1,0 +1,27 @@
+.task-main-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem;
+}
+
+.task-main-info__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.task-additional-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0.5rem 0.5rem;
+}
+
+.task-additional-info__description {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #7e7e7e;
+}

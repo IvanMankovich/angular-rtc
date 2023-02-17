@@ -30,14 +30,14 @@
     </div>
   </mat-card-header>
 
-  <div class="stack-items-container">
-    <mat-card cdkDropList id="{{ list?.id }}" #{{list?.tasksRefs}}="cdkDropList" [cdkDropListData]="list?.tasksRefs"
-      [cdkDropListConnectedTo]="cdkDropListConnectedTo" (cdkDropListDropped)="drop($event)" class="list">
-      <p class="empty-stack-message" *ngIf="!list?.tasks?.length">Empty list</p>
-      <app-task (edit)="openTaskModal()" *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task">
-      </app-task>
-    </mat-card>
-  </div>
+  <mat-card class="stack-items-container" cdkDropList id="{{ list?.id }}" #{{list?.tasksRefs}}="cdkDropList"
+    [cdkDropListData]="list?.tasksRefs" [cdkDropListConnectedTo]="cdkDropListConnectedTo"
+    (cdkDropListDropped)="drop($event)">
+    <p class="empty-stack-message" *ngIf="!list?.tasks?.length">Empty list</p>
+    <app-task (dblclick)="openTaskModal()" *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task"
+      class="mat-mdc-card mdc-card">
+    </app-task>
+  </mat-card>
 
   <mat-card-actions class="task-stack-actions">
     <button class="icon-button" (click)="openTaskModal()" color="primary" aria-label="Delete">

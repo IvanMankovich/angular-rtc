@@ -58,7 +58,12 @@ mat-card-header > .top-panel > mat-card-actions {
 }
 
 .stack-items-container {
-  padding: 1rem;
+  min-height: 3rem;
+  border-radius: 0.2rem;
+  margin: 0.5rem 1rem;
+  background-color: #e7e7e7;
+  box-shadow: inset 0 0.2rem 0.2rem #d5d5d5, inset 0 -0.1rem 0.1rem #d5d5d5,
+    inset 0.1rem 0 #d5d5d5, inset -0.1rem 0 #d5d5d5;
 }
 
 .task-stack-actions {
@@ -74,5 +79,14 @@ mat-card-header > .top-panel > mat-card-actions {
   margin: 0.4rem;
   font-size: 1rem;
   font-weight: bold;
-  color: #dcdcdc;
+  color: #a7a7a7;
+  text-align: center;
+}
+
+app-task {
+  margin: 0.2rem 0.2rem 0.4rem 0.2rem;
+}
+
+app-task:last-child {
+  margin: 0.2rem 0.2rem 0.2rem 0.2rem;
 }

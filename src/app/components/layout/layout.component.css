@@ -30,7 +30,7 @@ app-header {
   }
 }
 
-.footer {
+app-footer {
   align-items: center;
   display: flex;
   flex-direction: row;
