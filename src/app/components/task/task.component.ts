@@ -7,7 +7,7 @@ import { ITask } from 'src/app/types/types';
   styleUrls: ['./task.component.css'],
 })
 export class TaskComponent {
-  @Input() task: ITask | null = null;
+  @Input() task!: ITask;
   @Output() edit = new EventEmitter<ITask>();
   @Output() delete = new EventEmitter<ITask>();
   @Output() save = new EventEmitter<ITask>();
