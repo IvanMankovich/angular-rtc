@@ -30,3 +30,8 @@
 .board-controls-panel__text_bold {
   font-weight: bold;
 }
+
+:host {
+  display: flex;
+  overflow: hidden;
+}

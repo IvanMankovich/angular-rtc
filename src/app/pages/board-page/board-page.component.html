@@ -1,8 +1,11 @@
-<app-workspace-wrapper>
-  <app-board-controls-panel [title]="board?.title" [listsAmount]="lists.length" (openListModal)="openListModal()">
-  </app-board-controls-panel>
+<app-sidebar></app-sidebar>
+<app-main-content>
+  <app-workspace-wrapper>
+    <app-board-controls-panel [title]="board?.title" [listsAmount]="lists.length" (openListModal)="openListModal()">
+    </app-board-controls-panel>
 
-  <app-board-cards-panel [loading]="loading" [lists]="lists" [openListModal]="openListModal"
-    [openBoardConfirmModal]="openBoardConfirmModal" [getListsConnectedTo]="getListsConnectedTo">
-  </app-board-cards-panel>
-</app-workspace-wrapper>
+    <app-board-cards-panel [loading]="loading" [lists]="lists" [openListModal]="openListModal"
+      [openBoardConfirmModal]="openBoardConfirmModal" [getListsConnectedTo]="getListsConnectedTo">
+    </app-board-cards-panel>
+  </app-workspace-wrapper>
+</app-main-content>
