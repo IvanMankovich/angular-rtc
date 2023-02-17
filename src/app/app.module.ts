@@ -49,6 +49,8 @@ import { CreateUpdateDialogComponent } from './components/create-update-dialog/c
 import { WorkspaceWrapperComponent } from './components/workspace-wrapper/workspace-wrapper.component';
 import { BoardControlsPanelComponent } from './components/board-controls-panel/board-controls-panel.component';
 import { BoardCardsPanelComponent } from './components/board-cards-panel/board-cards-panel.component';
+import { MainComponent } from './components/main/main.component';
+import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.component';
 
 @NgModule({
   imports: [
@@ -96,6 +98,8 @@ import { BoardCardsPanelComponent } from './components/board-cards-panel/board-c
     WorkspaceWrapperComponent,
     BoardControlsPanelComponent,
     BoardCardsPanelComponent,
+    MainComponent,
+    MainWrapperComponent,
   ],
   bootstrap: [AppComponent],
 })

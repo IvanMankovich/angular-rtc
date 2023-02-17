@@ -4,8 +4,14 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  overflow-y: scroll;
 }
 
 .board-cards-panel-item {
   margin: 8px;
+}
+
+:host {
+  display: flex;
+  flex: 1;
 }

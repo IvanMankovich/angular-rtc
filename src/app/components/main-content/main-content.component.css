@@ -1,0 +1,12 @@
+:host {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+}
+
+:host {
+  width: calc(100% - 180px);
+}

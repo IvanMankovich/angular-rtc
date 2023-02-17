@@ -9,3 +9,25 @@
 .board-cards-panel-item {
   margin: 8px;
 }
+
+.example-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  justify-content: flex-start;
+  align-items: stretch;
+  height: 100%;
+  width: 100%;
+  min-height: calc(100% - 128px);
+  max-height: calc(100% - 128px);
+  overflow: hidden;
+}
+
+:host {
+  display: flex;
+  flex: 1 0 auto;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+}

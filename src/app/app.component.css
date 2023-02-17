@@ -46,7 +46,7 @@ app-new-task {
   opacity: 0;
 }
 
-.layout {
+app-layout {
   align-items: center;
   display: flex;
   flex: 1 0;
@@ -56,4 +56,10 @@ app-new-task {
   line-height: 1.5em;
   min-height: 100vh;
   min-width: 100%;
+}
+
+.router-flex {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
 }

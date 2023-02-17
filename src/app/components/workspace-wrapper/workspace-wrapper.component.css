@@ -1,14 +1,14 @@
-.workspace-wrapper {
+:host {
   width: 100%;
   display: flex;
-  flex: 1 1 auto;
+  flex: 1 0 auto;
   min-height: calc(100vh - 112px);
   box-sizing: border-box;
   flex-direction: column;
 }
 
 @media (min-width: 600px) {
-  .workspace-wrapper {
+  :host {
     min-height: calc(100vh - 128px);
   }
 }
