@@ -1,5 +1,10 @@
 <mat-toolbar class="board-controls-panel">
-  <button mat-button (click)="openListModal.emit()">Create list</button>
+  <button mat-icon-button (click)="openListModal.emit()" aria-label="Create list">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-icon-button (click)="handleSidebarState.emit()" aria-label="Create list">
+    <mat-icon>info</mat-icon>
+  </button>
   <div class="text-content">
     <p class="board-controls-panel__text" *ngIf="title">Current board: <span class="board-controls-panel__text_bold">{{
         title }}</span></p>

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IList } from 'src/app/types/types';
+import { IBoard, IList, ITask } from 'src/app/types/types';
 
 @Component({
   selector: 'app-board-cards-panel',
@@ -13,4 +13,5 @@ export class BoardCardsPanelComponent {
   @Input() openListModal!: (listId?: string, list?: IList) => Promise<void>;
   @Input() openBoardConfirmModal!: (listId?: string, list?: IList) => void;
   @Input() getListsConnectedTo!: (id?: string) => string[];
+  @Input() handleSidebarState!: (content?: IList | IBoard | ITask | null) => void;
 }

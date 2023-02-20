@@ -26,7 +26,7 @@ import {
 } from '@firebase/firestore';
 import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
-import { Collection, IList, ITask } from 'src/app/types/types';
+import { Collection, IBoard, IList, ITask } from 'src/app/types/types';
 
 @Component({
   selector: 'app-task-stack',
@@ -39,9 +39,10 @@ export class TaskStackComponent implements OnInit {
   @Output() edit = new EventEmitter<IList>();
   @Output() delete = new EventEmitter<IList>();
   @Output() save = new EventEmitter<IList>();
+  @Input() handleSidebarState!: (content?: IList | IBoard | ITask | null) => void;
   // tasks: ITask[] = [];
 
-  constructor(private dialog: MatDialog, private store: Firestore) {}
+  constructor(private dialog: MatDialog, private store: Firestore) { }
 
   openTaskModal(list?: List, task?: ITask): void {
     const taskDialogData: ITaskDialogData = {

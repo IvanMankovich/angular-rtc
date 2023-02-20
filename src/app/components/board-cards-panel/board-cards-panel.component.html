@@ -3,5 +3,6 @@
   <p *ngIf="!lists.length">No lists yet.</p>
   <app-task-stack *ngFor="let list of lists" [list]="list" (edit)="openListModal(list.id, list)"
     (delete)="openBoardConfirmModal(list.id, list)" class="board-cards-panel-item"
-    [cdkDropListConnectedTo]="getListsConnectedTo(list.id)"></app-task-stack>
+    [cdkDropListConnectedTo]="getListsConnectedTo(list.id)" [handleSidebarState]="handleSidebarState">
+  </app-task-stack>
 </div>

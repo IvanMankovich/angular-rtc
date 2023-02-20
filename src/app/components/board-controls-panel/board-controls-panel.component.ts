@@ -10,4 +10,5 @@ export class BoardControlsPanelComponent {
   @Input() listsAmount: number | null = null;
   @Input() title: string | undefined;
   @Output() openListModal = new EventEmitter<IList>();
+  @Output() handleSidebarState = new EventEmitter<IList>();
 }

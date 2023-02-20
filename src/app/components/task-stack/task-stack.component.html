@@ -7,7 +7,7 @@
           <mat-icon>more_horiz</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button mat-menu-item aria-label="Details">
+          <button mat-menu-item (click)="handleSidebarState(list)" aria-label="Details">
             <mat-icon>info</mat-icon>
             <span>Details</span>
           </button>
