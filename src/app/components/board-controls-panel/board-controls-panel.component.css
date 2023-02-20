@@ -1,7 +1,7 @@
 .board-controls-panel {
   flex-direction: row;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 0.5rem;
   background-color: #c9c9c9;
@@ -16,6 +16,7 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  margin-left: auto;
 }
 
 .board-controls-panel__text {

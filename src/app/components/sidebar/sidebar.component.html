@@ -1,1 +1,10 @@
-<p>sidebar works!</p>
+<div class="top-panel">
+  <p class="sidebar__title">Info</p>
+  <button mat-icon-button (click)="handleSidebarState.emit()" aria-label="Close sidebar">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="info-panel">
+  <p class="info-panel__title">Title: <span>{{ sidebar?.title }}</span></p>
+  <p class="info-panel__description">Description: <span>{{ sidebar?.description }}</span></p>
+</div>

@@ -8,5 +8,9 @@
 }
 
 :host {
-  width: calc(100% - 180px);
+  width: 100%;
+}
+
+:host.sidebar-open {
+  width: calc(100% - 280px);
 }

@@ -46,13 +46,14 @@ export class BoardPageComponent implements OnInit {
   loading = false;
   board: IBoard | null = null;
   lists: IList[] = [];
+  sidebar: IList | IBoard | ITask | null = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private store: Firestore,
     private dialog: MatDialog
-  ) {}
+  ) { }
 
   async openListModal(listId?: string, list?: IList): Promise<void> {
     const listDialogData: IDialogData = {
@@ -265,5 +266,9 @@ export class BoardPageComponent implements OnInit {
 
   getListsConnectedTo(id?: string): string[] {
     return this.lists.filter((list) => list.id !== id).map((l) => l.id);
+  }
+
+  handleSidebarState(content?: IList | IBoard | ITask | null): void {
+    this.sidebar = content ? content : null;
   }
 }
