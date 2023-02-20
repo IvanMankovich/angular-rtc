@@ -7,7 +7,7 @@ import {
   updateDoc,
   collection,
 } from '@angular/fire/firestore';
-import { Collection, IBoard, OperationType } from 'src/app/types/types';
+import { Collection, IBoard, IList, ITask, OperationType } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { onSnapshot } from '@firebase/firestore';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
@@ -21,12 +21,13 @@ import { DialogResult, IDialogData } from 'src/app/types/types';
 })
 export class MainPageComponent implements OnInit {
   title: string = 'Main';
-  boards: IBoard[] = [];
+  boards: (IList & IBoard)[] = [];
   loading: boolean = true;
+  sidebar: IList | IBoard | ITask | null = null;
 
-  constructor(private store: Firestore, private dialog: MatDialog) {}
+  constructor(private store: Firestore, private dialog: MatDialog) { }
 
-  async openBoardModal(boardId?: string, board?: IBoard): Promise<void> {
+  async openBoardModal(boardId?: string, board?: IList | IBoard): Promise<void> {
     const boardDialogData: IDialogData = {
       data: {
         item: board ? (board as IBoard) : {},
@@ -70,7 +71,7 @@ export class MainPageComponent implements OnInit {
     });
   }
 
-  openBoardConfirmModal(boardId?: string, board?: IBoard): void {
+  openBoardConfirmModal(boardId?: string, board?: IList | IBoard): void {
     const boardDialogData: IDialogData = {
       data: {
         item: board ? board : {},
@@ -89,12 +90,12 @@ export class MainPageComponent implements OnInit {
     onSnapshot(
       collection(this.store, Collection.boards),
       (querySnapshot) => {
-        const tempBoards: IBoard[] = [];
+        const tempBoards: (IList & IBoard)[] = [];
         querySnapshot.forEach((doc) => {
           tempBoards.push({
             id: doc.id,
             ...doc.data(),
-          } as IBoard);
+          } as (IList & IBoard));
         });
         this.boards = tempBoards;
         this.loading = false;
@@ -104,5 +105,9 @@ export class MainPageComponent implements OnInit {
         console.error(error);
       }
     );
+  }
+
+  handleSidebarState(content?: IList | IBoard | ITask | null): void {
+    this.sidebar = content ? content : null;
   }
 }

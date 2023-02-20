@@ -43,12 +43,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FooterComponent } from './components/footer/footer.component';
-import { BoardCardComponent } from './components/board-card/board-card.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from './components/create-update-dialog/create-update-dialog.component';
 import { WorkspaceWrapperComponent } from './components/workspace-wrapper/workspace-wrapper.component';
-import { BoardControlsPanelComponent } from './components/board-controls-panel/board-controls-panel.component';
-import { BoardCardsPanelComponent } from './components/board-cards-panel/board-cards-panel.component';
+import { ControlsPanelComponent } from './components/controls-panel/controls-panel.component';
+import { CardsPanelComponent } from './components/cards-panel/cards-panel.component';
 import { MainComponent } from './components/main/main.component';
 import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.component';
 
@@ -92,15 +91,14 @@ import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.com
     HeaderComponent,
     MainContentComponent,
     FooterComponent,
-    BoardCardComponent,
     ConfirmDialogComponent,
     CreateUpdateDialogComponent,
     WorkspaceWrapperComponent,
-    BoardControlsPanelComponent,
-    BoardCardsPanelComponent,
+    ControlsPanelComponent,
+    CardsPanelComponent,
     MainComponent,
     MainWrapperComponent,
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

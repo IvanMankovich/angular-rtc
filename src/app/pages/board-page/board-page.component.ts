@@ -45,7 +45,7 @@ export class BoardPageComponent implements OnInit {
   title = 'Board';
   loading = false;
   board: IBoard | null = null;
-  lists: IList[] = [];
+  lists: (IList & IBoard)[] = [];
   sidebar: IList | IBoard | ITask | null = null;
 
   constructor(
@@ -55,7 +55,7 @@ export class BoardPageComponent implements OnInit {
     private dialog: MatDialog
   ) { }
 
-  async openListModal(listId?: string, list?: IList): Promise<void> {
+  async openListModal(listId?: string, list?: IList | IBoard): Promise<void> {
     const listDialogData: IDialogData = {
       data: {
         item: list ? list : {},
@@ -110,7 +110,7 @@ export class BoardPageComponent implements OnInit {
     });
   }
 
-  openBoardConfirmModal(listId?: string, list?: IList): void {
+  openBoardConfirmModal(listId?: string, list?: IList | IBoard): void {
     const dialogData: IDialogData = {
       data: {
         item: list ? list : {},
@@ -176,7 +176,7 @@ export class BoardPageComponent implements OnInit {
             this.board = {
               ...querySnapshot?.data?.(),
               id: querySnapshot.id,
-            } as IBoard;
+            } as (IList & IBoard);
 
             if (this.board.lists.length) {
               const listsQuery = query(
@@ -186,7 +186,7 @@ export class BoardPageComponent implements OnInit {
               onSnapshot(
                 listsQuery,
                 (querySnapshot) => {
-                  const tempLists: IList[] = [];
+                  const tempLists: (IList & IBoard)[] = [];
                   const taskIds: string[] = [];
                   querySnapshot.forEach((doc) => {
                     const list = {
@@ -194,7 +194,7 @@ export class BoardPageComponent implements OnInit {
                       ...doc.data(),
                       tasksRefs: [] as ITask[],
                       otherListsTasksRefs: [] as ITask[][],
-                    } as IList;
+                    } as (IList & IBoard);
                     tempLists.push(list);
                     if (list.tasks?.length) {
                       taskIds.push(...list.tasks);
@@ -217,7 +217,7 @@ export class BoardPageComponent implements OnInit {
                           tasksList.push(list);
                         });
 
-                        const lists: IList[] = [...tempLists];
+                        const lists: (IList & IBoard)[] = [...tempLists];
                         tempLists.forEach((list, listInd) => {
                           list.tasks.forEach((task) => {
                             const tt = tasksList.find(
