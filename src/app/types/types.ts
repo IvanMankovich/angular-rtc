@@ -1,23 +1,20 @@
-export interface IBoard {
-  id: string;
-  title: string;
-  description: string;
-  lists: string[];
-}
-
-export interface IList {
+export interface IBaseElement {
   id: string;
   title: string;
   description?: string;
+}
+
+export interface IBoard extends IBaseElement {
+  lists: string[];
+}
+
+export interface IList extends IBaseElement {
   tasks: string[];
   tasksRefs: ITask[];
   otherListsTasksRefs: ITask[][];
 }
 
-export interface ITask {
-  id: string;
-  title: string;
-  description?: string;
+export interface ITask extends IBaseElement {
   complete: boolean;
 }
 

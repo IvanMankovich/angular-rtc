@@ -1,13 +1,11 @@
-<div>
-  <p *ngIf="!boards">No borads yet.</p>
-  <button (click)="openBoardModal()" mat-button>Create board</button>
-</div>
+<app-sidebar *ngIf="sidebar !== null" [sidebar]="sidebar" (handleSidebarState)="handleSidebarState()"></app-sidebar>
+<app-main-content [ngClass]="{'sidebar-open': sidebar}">
+  <app-workspace-wrapper>
+    <app-controls-panel [listsAmount]="boards.length" (openListModal)="openBoardModal()">
+    </app-controls-panel>
 
-<p *ngIf="loading">Loading.</p>
-<app-board-card
-  *ngFor="let board of boards"
-  [board]="board"
-  (edit)="openBoardModal(board.id, board)"
-  (delete)="openBoardConfirmModal(board.id, board)"
->
-</app-board-card>
+    <app-cards-panel [loading]="loading" [lists]="boards" [openModal]="openBoardModal.bind(this)"
+      [handleSidebarState]="handleSidebarState.bind(this)">
+    </app-cards-panel>
+  </app-workspace-wrapper>
+</app-main-content>

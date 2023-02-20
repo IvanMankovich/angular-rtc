@@ -1,7 +1,7 @@
 <mat-card class="task-stack">
   <mat-card-header>
     <div class="top-panel">
-      <mat-card-title>{{ list?.title ?? "Unknown name" }}</mat-card-title>
+      <mat-card-title>{{ list?.title }}</mat-card-title>
       <mat-card-actions>
         <button class="icon-button" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
           <mat-icon>more_horiz</mat-icon>
@@ -26,13 +26,13 @@
       <mat-card-subtitle *ngIf="list?.description">{{
         list?.description
         }}</mat-card-subtitle>
-      <mat-card-subtitle *ngIf="list?.tasks">Added tasks: {{ list?.tasks?.length }}</mat-card-subtitle>
+      <mat-card-subtitle>Added tasks: {{ list?.tasks?.length }}</mat-card-subtitle>
     </div>
   </mat-card-header>
 
-  <mat-card class="stack-items-container" cdkDropList id="{{ list?.id }}" #{{list?.tasksRefs}}="cdkDropList"
-    [cdkDropListData]="list?.tasksRefs" [cdkDropListConnectedTo]="cdkDropListConnectedTo"
-    (cdkDropListDropped)="drop($event)">
+  <mat-card *ngIf="list?.tasksRefs" class="stack-items-container" cdkDropList id="{{ list?.id }}"
+    #{{list?.tasksRefs}}="cdkDropList" [cdkDropListData]="list?.tasksRefs"
+    [cdkDropListConnectedTo]="cdkDropListConnectedTo" (cdkDropListDropped)="drop($event)">
     <p class="empty-stack-message" *ngIf="!list?.tasks?.length">Empty list</p>
     <app-task (dblclick)="openTaskModal()" *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task"
       class="mat-mdc-card mdc-card">
@@ -40,7 +40,8 @@
   </mat-card>
 
   <mat-card-actions class="task-stack-actions">
-    <button class="icon-button" (click)="openTaskModal()" color="primary" aria-label="Delete">
+    <a *ngIf="!list?.tasksRefs" routerLink="/board/{{ list?.id }}"><button mat-button>Go to board</button></a>
+    <button *ngIf="list?.tasksRefs" class="icon-button" (click)="openTaskModal()" color="primary" aria-label="Delete">
       <mat-icon>add</mat-icon>
     </button>
   </mat-card-actions>

@@ -34,11 +34,11 @@ import { Collection, IBoard, IList, ITask } from 'src/app/types/types';
   styleUrls: ['./task-stack.component.css'],
 })
 export class TaskStackComponent implements OnInit {
-  @Input() list: IList | null = null;
+  @Input() list: IList & IBoard | null = null;
   @Input() cdkDropListConnectedTo: any = [];
-  @Output() edit = new EventEmitter<IList>();
-  @Output() delete = new EventEmitter<IList>();
-  @Output() save = new EventEmitter<IList>();
+  @Output() edit = new EventEmitter<IList | IBoard>();
+  @Output() delete = new EventEmitter<IList | IBoard>();
+  @Output() save = new EventEmitter<IList | IBoard>();
   @Input() handleSidebarState!: (content?: IList | IBoard | ITask | null) => void;
   // tasks: ITask[] = [];
 
