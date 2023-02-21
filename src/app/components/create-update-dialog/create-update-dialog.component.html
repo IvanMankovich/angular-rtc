@@ -1,23 +1,33 @@
-<h1 mat-dialog-title>{{ modalTitle }}</h1>
-<div mat-dialog-content>{{ modalDescription }}</div>
+<mat-card>
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit(data.item.id ? OperationTypes.update : OperationTypes.create)">
+    <mat-card-header class="card-block">
+      <mat-card-title>{{ modalTitle }}</mat-card-title>
+    </mat-card-header>
 
-<mat-form-field>
-  <mat-label>Title</mat-label>
-  <input matInput cdkFocusInitial [(ngModel)]="title" />
-</mat-form-field>
+    <mat-card-content *ngIf="modalDescription" class="card-block">
+      <p>{{ modalDescription }}</p>
+      <mat-divider></mat-divider>
+    </mat-card-content>
 
-<mat-form-field>
-  <mat-label>Description</mat-label>
-  <textarea matInput [(ngModel)]="description"></textarea>
-</mat-form-field>
+    <mat-card-content class="card-block fields-container">
+      <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input matInput cdkFocusInitial formControlName="title" />
+      </mat-form-field>
 
-<div mat-dialog-actions>
-  <button
-    mat-button
-    aria-label="data.item.id ? 'Save changes' : 'Create'"
-    (click)="save(data.item.id ? OperationTypes.update : OperationTypes.create)"
-  >
-    {{ data.item.id ? "Save changes" : "Create" }}
-  </button>
-  <button mat-button aria-label="Cancel" (click)="cancel()">Cancel</button>
-</div>
+      <mat-form-field>
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+      <mat-divider></mat-divider>
+    </mat-card-content>
+
+    <mat-card-actions class="card-block">
+      <button mat-button type="submit" [disabled]="!profileForm.valid"
+        aria-label="data.item.id ? 'Save changes' : 'Create'">
+        {{ data.item.id ? "Save changes" : "Create" }}
+      </button>
+      <button mat-button aria-label="Cancel" type="button" (click)="cancel()">Cancel</button>
+    </mat-card-actions>
+  </form>
+</mat-card>

@@ -9,6 +9,14 @@
   padding: 0 1rem;
   position: relative;
   width: 100%;
+  overflow: hidden;
+}
+
+.header > .main-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .header > .main-menu > .mat-icon {

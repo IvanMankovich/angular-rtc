@@ -2,6 +2,8 @@ export interface IBaseElement {
   id: string;
   title: string;
   description?: string;
+  created?: Date;
+  updated?: Date;
 }
 
 export interface IBoard extends IBaseElement {

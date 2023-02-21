@@ -9,6 +9,7 @@
 
 .board-cards-panel-item {
   margin: 8px;
+  max-width: 280px;
 }
 
 :host {

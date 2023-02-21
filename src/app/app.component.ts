@@ -17,7 +17,6 @@ import {
   collectionGroup,
   collectionData,
 } from '@angular/fire/firestore';
-import { getObservable } from './helpers/getObservable';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ITaskStack } from './components/task-stack/task-stack.component';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';

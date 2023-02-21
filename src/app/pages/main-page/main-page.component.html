@@ -1,10 +1,10 @@
 <app-sidebar *ngIf="sidebar !== null" [sidebar]="sidebar" (handleSidebarState)="handleSidebarState()"></app-sidebar>
 <app-main-content [ngClass]="{'sidebar-open': sidebar}">
   <app-workspace-wrapper>
-    <app-controls-panel [listsAmount]="boards.length" (openListModal)="openBoardModal()">
+    <app-controls-panel [listsAmount]="boards.length" (openListModal)="openModal(CollectionNames.boards)">
     </app-controls-panel>
 
-    <app-cards-panel [loading]="loading" [lists]="boards" [openModal]="openBoardModal.bind(this)"
+    <app-cards-panel [loading]="loading" [lists]="boards" [openModal]="openModal.bind(this)"
       [handleSidebarState]="handleSidebarState.bind(this)">
     </app-cards-panel>
   </app-workspace-wrapper>
