@@ -1,16 +1,6 @@
-<!-- <mat-card>
-  <div class="">
-    <p>{{ task.title }}</p>
-    <mat-checkbox class="example-margin" [(ngModel)]="checked"></mat-checkbox>
-  </div>
-  <p>
-    {{ task.description }}
-  </p>
-</mat-card> -->
-
 <div class="task-main-info">
   <p class="task-main-info__title">{{ task.title }}</p>
-  <mat-checkbox class="task-main-info__complete-checkbox" [(ngModel)]="checked"></mat-checkbox>
+  <mat-checkbox class="task-main-info__complete-checkbox" [(ngModel)]="checked" color="primary"></mat-checkbox>
 </div>
 <div class="task-additional-info">
   <p class="task-additional-info__description">

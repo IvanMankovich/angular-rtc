@@ -25,9 +25,11 @@ export class MainPageComponent implements OnInit {
   loading: boolean = true;
   sidebar: IList | IBoard | ITask | null = null;
 
+  public CollectionNames = Collection;
+
   constructor(private store: Firestore, private dialog: MatDialog) { }
 
-  async openBoardModal(boardId?: string, board?: IList | IBoard): Promise<void> {
+  async openModal(boardId?: string, board?: IList | IBoard): Promise<void> {
     const boardDialogData: IDialogData = {
       data: {
         item: board ? (board as IBoard) : {},
@@ -47,10 +49,14 @@ export class MainPageComponent implements OnInit {
         return;
       } else {
         if (result.op === OperationType.create) {
-          await addDoc(collection(this.store, Collection.boards), {
+          console.log({
             ...result.item,
             lists: [],
-          });
+          })
+          // await addDoc(collection(this.store, Collection.boards), {
+          //   ...result.item,
+          //   lists: [],
+          // });
         } else {
           if (result.item.id && boardId) {
             switch (result.op) {
@@ -71,7 +77,7 @@ export class MainPageComponent implements OnInit {
     });
   }
 
-  openBoardConfirmModal(boardId?: string, board?: IList | IBoard): void {
+  openConfirmModal(boardId?: string, board?: IList | IBoard): void {
     const boardDialogData: IDialogData = {
       data: {
         item: board ? board : {},

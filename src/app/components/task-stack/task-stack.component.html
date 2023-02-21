@@ -3,7 +3,7 @@
     <div class="top-panel">
       <mat-card-title>{{ list?.title }}</mat-card-title>
       <mat-card-actions>
-        <button class="icon-button" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
           <mat-icon>more_horiz</mat-icon>
         </button>
         <mat-menu #menu="matMenu">
@@ -26,7 +26,7 @@
       <mat-card-subtitle *ngIf="list?.description">{{
         list?.description
         }}</mat-card-subtitle>
-      <mat-card-subtitle>Added tasks: {{ list?.tasks?.length }}</mat-card-subtitle>
+      <mat-card-subtitle *ngIf="list?.tasks">Added tasks: {{ list?.tasks?.length }}</mat-card-subtitle>
     </div>
   </mat-card-header>
 
@@ -41,7 +41,7 @@
 
   <mat-card-actions class="task-stack-actions">
     <a *ngIf="!list?.tasksRefs" routerLink="/board/{{ list?.id }}"><button mat-button>Go to board</button></a>
-    <button *ngIf="list?.tasksRefs" class="icon-button" (click)="openTaskModal()" color="primary" aria-label="Delete">
+    <button *ngIf="list?.tasksRefs" mat-icon-button color="primary" (click)="openTaskModal()" aria-label="Add">
       <mat-icon>add</mat-icon>
     </button>
   </mat-card-actions>

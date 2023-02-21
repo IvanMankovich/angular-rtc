@@ -1,0 +1,16 @@
+.card-block {
+  margin: 1rem;
+}
+
+.card-block:last-child {
+  margin: 0 1rem 1rem;
+}
+
+.fields-container {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+}

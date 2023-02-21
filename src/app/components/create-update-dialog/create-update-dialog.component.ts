@@ -8,6 +8,7 @@ import {
   DialogData,
   DialogResult,
 } from 'src/app/types/types';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create-update-dialog',
@@ -17,14 +18,26 @@ import {
 export class CreateUpdateDialogComponent {
   @Input() title: string = '';
   @Input() description: string = '';
-  @Input() modalTitle: string = '';
-  @Input() modalDescription: string = '';
+  @Input() modalTitle: string = this.data.modalTitle ?? '';
+  @Input() modalDescription: string = this.data.modalDescription ?? '';
 
+  profileForm: FormGroup = new FormGroup({
+    title: new FormControl(this.data.item?.title ?? '', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(128),
+    ]),
+    description: new FormControl(this.data.item?.description ?? '', [
+      Validators.required,
+      Validators.minLength(4),
+      Validators.maxLength(128),
+    ]),
+  });
   public OperationTypes = OperationType;
   constructor(
     public dialogRef: MatDialogRef<CreateUpdateDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {}
+  ) { }
 
   cancel(): void {
     this.dialogRef.close();
@@ -55,10 +68,21 @@ export class CreateUpdateDialogComponent {
     this.dialogRef.close(result);
   }
 
+  onSubmit(op: OperationType.create | OperationType.update) {
+    console.log(this.data);
+    console.warn({
+      ...this.data,
+      item: {
+        ...this.data.item,
+        ...this.profileForm.value,
+      },
+      op: op,
+    });
+    this.dialogRef.close(this.profileForm.value);
+  }
+
   ngOnInit() {
-    this.title = this.data.item?.title ?? '';
-    this.description = this.data.item?.description ?? '';
-    this.modalTitle = this.data.modalTitle ?? '';
-    this.modalDescription = this.data.modalDescription ?? '';
+    // this.modalTitle = this.data.modalTitle ?? '';
+    // this.modalDescription = this.data.modalDescription ?? '';
   }
 }
