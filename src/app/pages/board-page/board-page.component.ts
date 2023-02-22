@@ -6,6 +6,9 @@ import {
   deleteDoc,
   updateDoc,
   collection,
+  writeBatch,
+  WriteBatch,
+  getDocs
 } from '@angular/fire/firestore';
 import {
   onSnapshot,
@@ -29,12 +32,6 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
-import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
-import {
-  ITaskDialogData,
-  TaskDialogComponent,
-  TaskDialogResult,
-} from 'src/app/components/task-dialog/task-dialog.component';
 
 @Component({
   selector: 'app-board-page',
@@ -44,7 +41,7 @@ import {
 export class BoardPageComponent implements OnInit {
   title = 'Board';
   loading = false;
-  board: IBoard | null = null;
+  board?: IList & IBoard;
   lists: (IList & IBoard)[] = [];
   sidebar: IList | IBoard | ITask | null = null;
 
@@ -59,89 +56,107 @@ export class BoardPageComponent implements OnInit {
   ) { }
 
   async openModal(collectionName: Collection, opType: OperationType, list?: IList | IBoard): Promise<void> {
-    // const listDialogData: IDialogData = {
-    //   data: {
-    //     item: list ? list : {},
-    //     modalTitle: listId ? `Edit list ${list?.title}` : `Create new list`,
-    //   },
-    // };
-    // if (listId) {
-    //   listDialogData.data.enableDelete = listId;
-    // }
+    const listDialogData: IDialogData = {
+      data: {
+        item: list ? list : {},
+        modalTitle: opType === OperationType.update ? `Edit list ${list?.title}` : `Create new list`,
+      },
+    };
 
-    // const dialogRef = this.dialog.open(
-    //   CreateUpdateDialogComponent,
-    //   listDialogData
-    // );
-    // dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
-    //   if (!result || !this.board?.id) {
-    //     return;
-    //   } else {
-    //     if (result.op === OperationType.create) {
-    //       // create new list
-    //       const newList = await addDoc(
-    //         collection(this.store, Collection.lists),
-    //         result.item
-    //       );
-    //       // update board - add listRef to board
-    //       updateDoc(doc(this.store, Collection.boards, this.board.id), {
-    //         lists: arrayUnion(newList.id),
-    //       });
-    //     } else {
-    //       if (result.item.id && listId) {
-    //         switch (result.op) {
-    //           case OperationType.update:
-    //             updateDoc(doc(this.store, Collection.lists, result.item.id), {
-    //               ...result.item,
-    //             });
-    //             break;
-    //           case OperationType.delete:
-    //             await deleteDoc(
-    //               doc(this.store, Collection.boards, result.item.id)
-    //             );
-    //             updateDoc(doc(this.store, Collection.boards, this.board.id), {
-    //               lists: arrayRemove(result.item.id),
-    //             });
-    //             // TODO: delete tasks
-    //             break;
-    //           default:
-    //             break;
-    //         }
-    //       }
-    //     }
-    //   }
-    // });
+    if (list?.id) {
+      listDialogData.data.enableDelete = list?.id;
+    }
+
+    const dialogRef = this.dialog.open(
+      CreateUpdateDialogComponent,
+      listDialogData
+    );
+    dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
+      if (!result || !this.board?.id) {
+        return;
+      } else {
+        if (result.op === OperationType.create) {
+          // create new list
+          const newList = await addDoc(
+            collection(this.store, Collection.lists),
+            result.item
+          );
+          // update board - add listRef to board
+          updateDoc(doc(this.store, Collection.boards, this.board.id), {
+            lists: arrayUnion(newList.id),
+          });
+        } else {
+          if (result.item.id && list?.id) {
+            switch (result.op) {
+              case OperationType.update:
+                updateDoc(doc(this.store, Collection.lists, result.item.id), {
+                  ...result.item,
+                });
+                break;
+              case OperationType.delete:
+                await deleteDoc(
+                  doc(this.store, Collection.boards, result.item.id)
+                );
+                updateDoc(doc(this.store, Collection.boards, this.board.id), {
+                  lists: arrayRemove(result.item.id),
+                });
+                // TODO: delete tasks
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      }
+    });
   }
 
-  openConfirmModal(collection: Collection, opType: OperationType, list?: IList | IBoard): void {
-    // const dialogData: IDialogData = {
-    //   data: {
-    //     item: list ? list : {},
-    //     modalTitle: `Remove list`,
-    //     modalDescription: `Are you sure you want to remove ${list?.title}?`,
-    //   },
-    // };
+  openConfirmModal(collectionName: Collection, opType: OperationType, list?: IList | IBoard): void {
+    const dialogData: IDialogData = {
+      data: {
+        item: list ? list : {},
+        modalTitle: `Remove list`,
+        modalDescription: `Are you sure you want to remove ${list?.title}?`,
+      },
+    };
 
-    // const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogData);
-    // dialogRef.afterClosed().subscribe((result: DialogResult) => {
-    //   if (!result) {
-    //     return;
-    //   } else {
-    //     if (result.item.id && listId && this.board?.id) {
-    //       switch (result.op) {
-    //         case OperationType.delete:
-    //           deleteDoc(doc(this.store, Collection.lists, result.item.id));
-    //           updateDoc(doc(this.store, Collection.boards, this.board.id), {
-    //             lists: arrayRemove(result.item.id),
-    //           });
-    //           // TODO: delete tasks
-    //           break;
-    //         default:
-    //           break;
-    //       }
-    //     }
-    //   }
-    // });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogData);
+    dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
+      if (!result) {
+        return;
+      } else {
+        if (result.item.id && list?.id && this.board?.id) {
+          switch (result.op) {
+            case OperationType.delete:
+              if (result.item.tasks.length) {
+                const batch: WriteBatch = writeBatch(this.store);
+
+                const tasksQuery = query(
+                  collection(this.store, Collection.tasks),
+                  where(documentId(), 'in', result.item.tasks)
+                );
+
+                const tasksQuerySnapshot = await getDocs(tasksQuery);
+                tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
+                batch.commit();
+              }
+
+              runTransaction(this.store, () => {
+                const promise = Promise.all([
+                  deleteDoc(doc(this.store, Collection.lists, result.item.id)),
+                  updateDoc(doc(this.store, Collection.boards, this.board!.id), {
+                    lists: arrayRemove(result.item.id),
+                  }),
+                ]);
+                return promise;
+              });
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    });
   }
 
   // drop(event: CdkDragDrop<IList[] | null>): void {
@@ -174,11 +189,11 @@ export class BoardPageComponent implements OnInit {
     } else {
       onSnapshot(
         doc(this.store, Collection.boards, boardIdFromRoute),
-        (querySnapshot) => {
-          if (querySnapshot.exists()) {
+        (boardsQuerySnapshot) => {
+          if (boardsQuerySnapshot.exists()) {
             this.board = {
-              ...querySnapshot?.data?.(),
-              id: querySnapshot.id,
+              ...boardsQuerySnapshot?.data?.(),
+              id: boardsQuerySnapshot.id,
             } as (IList & IBoard);
 
             if (this.board.lists.length) {
@@ -188,10 +203,10 @@ export class BoardPageComponent implements OnInit {
               );
               onSnapshot(
                 listsQuery,
-                (querySnapshot) => {
+                (listsQuerySnapshot) => {
                   const tempLists: (IList & IBoard)[] = [];
                   const taskIds: string[] = [];
-                  querySnapshot.forEach((doc) => {
+                  listsQuerySnapshot.forEach((doc) => {
                     const list = {
                       id: doc.id,
                       ...doc.data(),
@@ -204,15 +219,15 @@ export class BoardPageComponent implements OnInit {
                     }
                   });
                   if (taskIds.length) {
-                    const listsQuery = query(
+                    const tasksQuery = query(
                       collection(this.store, Collection.tasks),
                       where(documentId(), 'in', taskIds)
                     );
                     onSnapshot(
-                      listsQuery,
-                      (querySnapshot) => {
+                      tasksQuery,
+                      (tasksQuerySnapshot) => {
                         const tasksList: ITask[] = [];
-                        querySnapshot.forEach((doc) => {
+                        tasksQuerySnapshot.forEach((doc) => {
                           const list = {
                             id: doc.id,
                             ...doc.data(),
@@ -233,7 +248,6 @@ export class BoardPageComponent implements OnInit {
                         });
 
                         this.lists = lists;
-                        console.log(lists);
                         this.loading = false;
                       },
                       (error) => {

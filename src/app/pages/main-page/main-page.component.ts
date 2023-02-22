@@ -102,13 +102,6 @@ export class MainPageComponent implements OnInit {
                 } else {
                   deleteDoc(doc(this.store, Collection.boards, result.item.id));
                 }
-                // if lists get lists
-                // get tasks
-                // if tasks - delete tasks
-                // 
-                // remove tasks
-                // remove lists
-                // deleteDoc(doc(this.store, Collection.boards, result.item.id));
                 break;
               default:
                 break;
