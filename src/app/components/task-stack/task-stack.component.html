@@ -34,14 +34,15 @@
     #{{list?.tasksRefs}}="cdkDropList" [cdkDropListData]="list?.tasksRefs"
     [cdkDropListConnectedTo]="cdkDropListConnectedTo" (cdkDropListDropped)="drop($event)">
     <p class="empty-stack-message" *ngIf="!list?.tasks?.length">Empty list</p>
-    <app-task (dblclick)="openTaskModal()" *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task"
-      class="mat-mdc-card mdc-card">
+    <app-task (dblclick)="openTaskModal(CollectionNames.tasks, OperationTypes.update, task)"
+      *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task" class="mat-mdc-card mdc-card">
     </app-task>
   </mat-card>
 
   <mat-card-actions class="task-stack-actions">
     <a *ngIf="!list?.tasksRefs" routerLink="/board/{{ list?.id }}"><button mat-button>Go to board</button></a>
-    <button *ngIf="list?.tasksRefs" mat-icon-button color="primary" (click)="openTaskModal()" aria-label="Add">
+    <button *ngIf="list?.tasksRefs" mat-icon-button color="primary"
+      (click)="openTaskModal(CollectionNames.tasks, OperationTypes.create)" aria-label="Add">
       <mat-icon>add</mat-icon>
     </button>
   </mat-card-actions>
