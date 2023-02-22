@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Collection, IBoard, IList, ITask } from 'src/app/types/types';
+import { Collection, IBoard, IList, ITask, OperationType } from 'src/app/types/types';
 
 @Component({
   selector: 'app-cards-panel',
@@ -7,12 +7,15 @@ import { Collection, IBoard, IList, ITask } from 'src/app/types/types';
   styleUrls: ['./cards-panel.component.css']
 })
 export class CardsPanelComponent {
-  @Input() cardType: Collection | null = null;
+  @Input() collectionName!: Collection;
   @Input() lists: (IBoard & IList)[] = [];
   @Input() title: string | undefined;
   @Input() loading: boolean = true;
-  @Input() openModal!: (listId?: string, list?: IList | IBoard) => Promise<void>;
-  @Input() openConfirmModal!: (listId?: string, list?: IList | IBoard) => void;
+  @Input() openModal!: (collectionName: Collection, opType: OperationType, list?: IList | IBoard) => Promise<void>;
+  @Input() openConfirmModal!: (collectionName: Collection, opType: OperationType, list?: IList | IBoard) => void;
   @Input() getListsConnectedTo?: (id?: string) => string[];
   @Input() handleSidebarState!: (content?: IList | IBoard | ITask | null) => void;
+
+  public CollectionNames = Collection;
+  public OperationTypes = OperationType;
 }

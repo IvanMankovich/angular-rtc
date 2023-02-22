@@ -48,6 +48,9 @@ export class BoardPageComponent implements OnInit {
   lists: (IList & IBoard)[] = [];
   sidebar: IList | IBoard | ITask | null = null;
 
+  public CollectionNames = Collection;
+  public OperationTypes = OperationType;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -55,90 +58,90 @@ export class BoardPageComponent implements OnInit {
     private dialog: MatDialog
   ) { }
 
-  async openListModal(listId?: string, list?: IList | IBoard): Promise<void> {
-    const listDialogData: IDialogData = {
-      data: {
-        item: list ? list : {},
-        modalTitle: listId ? `Edit list ${list?.title}` : `Create new list`,
-      },
-    };
-    if (listId) {
-      listDialogData.data.enableDelete = listId;
-    }
+  async openModal(collectionName: Collection, opType: OperationType, list?: IList | IBoard): Promise<void> {
+    // const listDialogData: IDialogData = {
+    //   data: {
+    //     item: list ? list : {},
+    //     modalTitle: listId ? `Edit list ${list?.title}` : `Create new list`,
+    //   },
+    // };
+    // if (listId) {
+    //   listDialogData.data.enableDelete = listId;
+    // }
 
-    const dialogRef = this.dialog.open(
-      CreateUpdateDialogComponent,
-      listDialogData
-    );
-    dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
-      if (!result || !this.board?.id) {
-        return;
-      } else {
-        if (result.op === OperationType.create) {
-          // create new list
-          const newList = await addDoc(
-            collection(this.store, Collection.lists),
-            result.item
-          );
-          // update board - add listRef to board
-          updateDoc(doc(this.store, Collection.boards, this.board.id), {
-            lists: arrayUnion(newList.id),
-          });
-        } else {
-          if (result.item.id && listId) {
-            switch (result.op) {
-              case OperationType.update:
-                updateDoc(doc(this.store, Collection.lists, result.item.id), {
-                  ...result.item,
-                });
-                break;
-              case OperationType.delete:
-                await deleteDoc(
-                  doc(this.store, Collection.boards, result.item.id)
-                );
-                updateDoc(doc(this.store, Collection.boards, this.board.id), {
-                  lists: arrayRemove(result.item.id),
-                });
-                // TODO: delete tasks
-                break;
-              default:
-                break;
-            }
-          }
-        }
-      }
-    });
+    // const dialogRef = this.dialog.open(
+    //   CreateUpdateDialogComponent,
+    //   listDialogData
+    // );
+    // dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
+    //   if (!result || !this.board?.id) {
+    //     return;
+    //   } else {
+    //     if (result.op === OperationType.create) {
+    //       // create new list
+    //       const newList = await addDoc(
+    //         collection(this.store, Collection.lists),
+    //         result.item
+    //       );
+    //       // update board - add listRef to board
+    //       updateDoc(doc(this.store, Collection.boards, this.board.id), {
+    //         lists: arrayUnion(newList.id),
+    //       });
+    //     } else {
+    //       if (result.item.id && listId) {
+    //         switch (result.op) {
+    //           case OperationType.update:
+    //             updateDoc(doc(this.store, Collection.lists, result.item.id), {
+    //               ...result.item,
+    //             });
+    //             break;
+    //           case OperationType.delete:
+    //             await deleteDoc(
+    //               doc(this.store, Collection.boards, result.item.id)
+    //             );
+    //             updateDoc(doc(this.store, Collection.boards, this.board.id), {
+    //               lists: arrayRemove(result.item.id),
+    //             });
+    //             // TODO: delete tasks
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       }
+    //     }
+    //   }
+    // });
   }
 
-  openBoardConfirmModal(listId?: string, list?: IList | IBoard): void {
-    const dialogData: IDialogData = {
-      data: {
-        item: list ? list : {},
-        modalTitle: `Remove list`,
-        modalDescription: `Are you sure you want to remove ${list?.title}?`,
-      },
-    };
+  openConfirmModal(collection: Collection, opType: OperationType, list?: IList | IBoard): void {
+    // const dialogData: IDialogData = {
+    //   data: {
+    //     item: list ? list : {},
+    //     modalTitle: `Remove list`,
+    //     modalDescription: `Are you sure you want to remove ${list?.title}?`,
+    //   },
+    // };
 
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogData);
-    dialogRef.afterClosed().subscribe((result: DialogResult) => {
-      if (!result) {
-        return;
-      } else {
-        if (result.item.id && listId && this.board?.id) {
-          switch (result.op) {
-            case OperationType.delete:
-              deleteDoc(doc(this.store, Collection.lists, result.item.id));
-              updateDoc(doc(this.store, Collection.boards, this.board.id), {
-                lists: arrayRemove(result.item.id),
-              });
-              // TODO: delete tasks
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    });
+    // const dialogRef = this.dialog.open(ConfirmDialogComponent, dialogData);
+    // dialogRef.afterClosed().subscribe((result: DialogResult) => {
+    //   if (!result) {
+    //     return;
+    //   } else {
+    //     if (result.item.id && listId && this.board?.id) {
+    //       switch (result.op) {
+    //         case OperationType.delete:
+    //           deleteDoc(doc(this.store, Collection.lists, result.item.id));
+    //           updateDoc(doc(this.store, Collection.boards, this.board.id), {
+    //             lists: arrayRemove(result.item.id),
+    //           });
+    //           // TODO: delete tasks
+    //           break;
+    //         default:
+    //           break;
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   // drop(event: CdkDragDrop<IList[] | null>): void {

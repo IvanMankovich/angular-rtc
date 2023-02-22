@@ -21,19 +21,19 @@ export interface ITask extends IBaseElement {
 }
 
 export interface DialogData {
-  item: IList | IBoard;
+  item: IList & IBoard;
   modalTitle?: string;
   modalDescription?: string;
 }
 
 export interface DialogResult {
-  item: IList | IBoard;
+  item: IList & IBoard;
   op: OperationType;
 }
 
 export interface IDialogData {
   data: {
-    item: IList | IBoard | {};
+    item: IList & IBoard | {};
     enableDelete?: any;
     modalTitle?: string;
     modalDescription?: string;
