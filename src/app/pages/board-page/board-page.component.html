@@ -1,12 +1,13 @@
 <app-sidebar *ngIf="sidebar !== null" [sidebar]="sidebar" (handleSidebarState)="handleSidebarState()"></app-sidebar>
 <app-main-content [ngClass]="{'sidebar-open': sidebar}">
   <app-workspace-wrapper>
-    <app-controls-panel [title]="board?.title" [listsAmount]="lists.length" (openListModal)="openListModal()"
+    <app-controls-panel [title]="board?.title" [listsAmount]="lists.length"
+      (openListModal)="openModal(CollectionNames.lists, OperationTypes.create)"
       (handleSidebarState)="handleSidebarState(board)">
     </app-controls-panel>
 
-    <app-cards-panel [loading]="loading" [lists]="lists" [openModal]="openListModal.bind(this)"
-      [openConfirmModal]="openBoardConfirmModal.bind(this)" [getListsConnectedTo]="getListsConnectedTo"
+    <app-cards-panel [loading]="loading" [lists]="lists" [openModal]="openModal.bind(this)"
+      [openConfirmModal]="openConfirmModal.bind(this)" [getListsConnectedTo]="getListsConnectedTo"
       [handleSidebarState]="handleSidebarState.bind(this)">
     </app-cards-panel>
   </app-workspace-wrapper>

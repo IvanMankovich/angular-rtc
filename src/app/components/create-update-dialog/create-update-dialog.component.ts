@@ -69,8 +69,7 @@ export class CreateUpdateDialogComponent {
   }
 
   onSubmit(op: OperationType.create | OperationType.update) {
-    console.log(this.data);
-    console.warn({
+    this.dialogRef.close({
       ...this.data,
       item: {
         ...this.data.item,
@@ -78,11 +77,5 @@ export class CreateUpdateDialogComponent {
       },
       op: op,
     });
-    this.dialogRef.close(this.profileForm.value);
-  }
-
-  ngOnInit() {
-    // this.modalTitle = this.data.modalTitle ?? '';
-    // this.modalDescription = this.data.modalDescription ?? '';
   }
 }
