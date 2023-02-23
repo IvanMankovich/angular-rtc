@@ -1,6 +1,7 @@
 <div class="task-main-info">
   <p class="task-main-info__title">{{ task.title }}</p>
-  <mat-checkbox class="task-main-info__complete-checkbox" [(ngModel)]="checked" color="primary"></mat-checkbox>
+  <mat-checkbox class="task-main-info__complete-checkbox" [checked]="task.complete" color="primary"
+    (change)="changeStatus.emit()"></mat-checkbox>
 </div>
 <div class="task-additional-info">
   <p class="task-additional-info__description">

@@ -7,4 +7,8 @@
 <div class="info-panel">
   <p class="info-panel__title">Title: <span>{{ sidebar?.title }}</span></p>
   <p class="info-panel__description">Description: <span>{{ sidebar?.description }}</span></p>
+  <p *ngIf="sidebar?.created" class="info-panel__description">Created: <span>{{ created | date: 'MM/dd/yyyy'}}</span>
+  </p>
+  <p *ngIf="sidebar?.updated" class="info-panel__description">Updated: <span>{{ updated | date: 'MM/dd/yyyy'}}</span>
+  </p>
 </div>

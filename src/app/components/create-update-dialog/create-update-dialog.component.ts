@@ -1,9 +1,6 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { List } from './../../app.component';
 import {
-  IBoard,
-  IList,
   OperationType,
   DialogData,
   DialogResult,

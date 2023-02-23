@@ -1,12 +1,6 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  TaskDialogResult,
-  TaskDialogComponent,
-  ITaskDialogData,
-  TaskDialogOperation,
-} from '../task-dialog/task-dialog.component';
 import {
   Firestore,
   addDoc,
@@ -16,17 +10,11 @@ import {
   serverTimestamp,
 } from '@angular/fire/firestore';
 import {
-  onSnapshot,
-  query,
-  where,
   doc,
-  documentId,
   arrayUnion,
   arrayRemove,
   runTransaction,
 } from '@firebase/firestore';
-import { List } from '../../app.component';
-import { BehaviorSubject } from 'rxjs';
 import { Collection, DialogResult, IBoard, IDialogData, IList, ITask, OperationType } from 'src/app/types/types';
 import { CreateUpdateDialogComponent } from '../create-update-dialog/create-update-dialog.component';
 import { Task } from 'src/app/helpers/classes/Task';
@@ -87,6 +75,12 @@ export class TaskStackComponent {
       });
       deleteDoc(doc(this.store, Collection.tasks, item.id));
     }
+  }
+
+  onChange(item: ITask): void {
+    updateDoc(doc(this.store, Collection.tasks, item.id), {
+      complete: !item.complete,
+    });
   }
 
   drop(event: CdkDragDrop<ITask[] | undefined>): void {

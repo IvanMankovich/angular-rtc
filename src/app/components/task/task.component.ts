@@ -11,6 +11,6 @@ export class TaskComponent {
   @Output() edit = new EventEmitter<ITask>();
   @Output() delete = new EventEmitter<ITask>();
   @Output() showInfo = new EventEmitter<ITask>();
-  checked = true;
+  @Output() changeStatus = new EventEmitter<ITask>();
   panelOpenState = false;
 }
