@@ -34,7 +34,8 @@
     #{{list?.tasksRefs}}="cdkDropList" [cdkDropListData]="list?.tasksRefs"
     [cdkDropListConnectedTo]="cdkDropListConnectedTo" (cdkDropListDropped)="drop($event)">
     <p class="empty-stack-message" *ngIf="!list?.tasks?.length">Empty list</p>
-    <app-task (dblclick)="openTaskModal(CollectionNames.tasks, OperationTypes.update, task)"
+    <app-task (edit)="openTaskModal(CollectionNames.tasks, OperationTypes.update, task)"
+      (showInfo)="handleSidebarState(task)" (delete)="deleteTask(CollectionNames.tasks, OperationTypes.delete, task)"
       *ngFor="let task of list?.tasksRefs" cdkDrag [task]="task" class="mat-mdc-card mdc-card">
     </app-task>
   </mat-card>

@@ -7,3 +7,21 @@
     {{ task.description }}
   </p>
 </div>
+<mat-accordion>
+  <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+    <mat-expansion-panel-header>
+    </mat-expansion-panel-header>
+
+    <div class="task-controls">
+      <button mat-icon-button color="primary" (click)="showInfo.emit()" aria-label="Details">
+        <mat-icon>info</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="edit.emit()" aria-label="Edit">
+        <mat-icon>edit_square</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="delete.emit()" aria-label="Delete">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

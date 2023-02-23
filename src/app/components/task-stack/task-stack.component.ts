@@ -92,6 +92,15 @@ export class TaskStackComponent {
     });
   }
 
+  deleteTask(collectionName: Collection, opType: OperationType, item?: ITask): void {
+    if (item?.id && this.list?.id) {
+      updateDoc(doc(this.store, Collection.lists, this.list.id), {
+        tasks: arrayRemove(item.id),
+      });
+      deleteDoc(doc(this.store, Collection.tasks, item.id));
+    }
+  }
+
   drop(event: CdkDragDrop<ITask[] | undefined>): void {
     console.log(
       event.previousContainer === event.container,
