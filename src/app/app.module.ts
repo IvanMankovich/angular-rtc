@@ -19,7 +19,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AppComponent } from './app.component';
 import { TaskComponent } from './components/task/task.component';
-import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
 import { environment } from '../environments/environment';
 
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -87,7 +86,6 @@ import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.com
   declarations: [
     AppComponent,
     TaskComponent,
-    TaskDialogComponent,
     TaskStackComponent,
     MainPageComponent,
     BoardPageComponent,

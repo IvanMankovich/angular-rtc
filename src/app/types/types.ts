@@ -1,13 +1,13 @@
 import {
-  FieldValue,
+  FieldValue, Timestamp,
 } from '@angular/fire/firestore';
 
 export interface IBaseElement {
   id: string;
   title: string;
   description?: string;
-  created?: FieldValue;
-  updated?: FieldValue;
+  created?: FieldValue | Timestamp;
+  updated?: FieldValue | Timestamp;
 }
 
 export interface IBoard extends IBaseElement {
