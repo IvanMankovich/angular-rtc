@@ -198,8 +198,8 @@ export class BoardPageComponent implements OnInit {
                         });
 
                         const lists: (IList & IBoard)[] = [...tempLists];
-                        console.log(JSON.stringify(lists));
                         tempLists.forEach((list, listInd) => {
+                          lists[listInd].tasksRefs.length = 0;
                           list.tasks.forEach((task) => {
                             const tt = tasksList.find(
                               (tempTask) => tempTask.id === task
@@ -209,8 +209,6 @@ export class BoardPageComponent implements OnInit {
                             }
                           });
                         });
-
-                        console.log(JSON.stringify(lists));
 
                         this.lists = lists;
                         this.loading = false;
