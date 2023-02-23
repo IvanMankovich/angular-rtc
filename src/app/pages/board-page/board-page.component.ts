@@ -8,7 +8,8 @@ import {
   collection,
   writeBatch,
   WriteBatch,
-  getDocs
+  getDocs,
+  serverTimestamp
 } from '@angular/fire/firestore';
 import {
   onSnapshot,
@@ -32,6 +33,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
+import { List } from 'src/app/helpers/classes/List';
 
 @Component({
   selector: 'app-board-page',
@@ -55,17 +57,13 @@ export class BoardPageComponent implements OnInit {
     private dialog: MatDialog
   ) { }
 
-  async openModal(collectionName: Collection, opType: OperationType, list?: IList | IBoard): Promise<void> {
+  async openModal(collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard): Promise<void> {
     const listDialogData: IDialogData = {
       data: {
         item: list ? list : {},
         modalTitle: opType === OperationType.update ? `Edit list ${list?.title}` : `Create new list`,
       },
     };
-
-    if (list?.id) {
-      listDialogData.data.enableDelete = list?.id;
-    }
 
     const dialogRef = this.dialog.open(
       CreateUpdateDialogComponent,
@@ -76,36 +74,26 @@ export class BoardPageComponent implements OnInit {
         return;
       } else {
         if (result.op === OperationType.create) {
-          // create new list
           const newList = await addDoc(
             collection(this.store, Collection.lists),
-            result.item
+            {
+              ...new List({
+                ...result.item,
+                created: serverTimestamp(),
+                tasks: [],
+              })
+            }
           );
-          // update board - add listRef to board
           updateDoc(doc(this.store, Collection.boards, this.board.id), {
             lists: arrayUnion(newList.id),
           });
         } else {
-          if (result.item.id && list?.id) {
-            switch (result.op) {
-              case OperationType.update:
-                updateDoc(doc(this.store, Collection.lists, result.item.id), {
-                  ...result.item,
-                });
-                break;
-              case OperationType.delete:
-                await deleteDoc(
-                  doc(this.store, Collection.boards, result.item.id)
-                );
-                updateDoc(doc(this.store, Collection.boards, this.board.id), {
-                  lists: arrayRemove(result.item.id),
-                });
-                // TODO: delete tasks
-                break;
-              default:
-                break;
-            }
-          }
+          updateDoc(doc(this.store, Collection.lists, result.item.id), {
+            ...new List({
+              ...result.item,
+              updated: serverTimestamp(),
+            })
+          });
         }
       }
     });
@@ -126,58 +114,32 @@ export class BoardPageComponent implements OnInit {
         return;
       } else {
         if (result.item.id && list?.id && this.board?.id) {
-          switch (result.op) {
-            case OperationType.delete:
-              if (result.item.tasks.length) {
-                const batch: WriteBatch = writeBatch(this.store);
+          if (result.item.tasks.length) {
+            const batch: WriteBatch = writeBatch(this.store);
 
-                const tasksQuery = query(
-                  collection(this.store, Collection.tasks),
-                  where(documentId(), 'in', result.item.tasks)
-                );
+            const tasksQuery = query(
+              collection(this.store, Collection.tasks),
+              where(documentId(), 'in', result.item.tasks)
+            );
 
-                const tasksQuerySnapshot = await getDocs(tasksQuery);
-                tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
-                batch.commit();
-              }
-
-              runTransaction(this.store, () => {
-                const promise = Promise.all([
-                  deleteDoc(doc(this.store, Collection.lists, result.item.id)),
-                  updateDoc(doc(this.store, Collection.boards, this.board!.id), {
-                    lists: arrayRemove(result.item.id),
-                  }),
-                ]);
-                return promise;
-              });
-              break;
-            default:
-              break;
+            const tasksQuerySnapshot = await getDocs(tasksQuery);
+            tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
+            batch.commit();
           }
+
+          runTransaction(this.store, () => {
+            const promise = Promise.all([
+              deleteDoc(doc(this.store, Collection.lists, result.item.id)),
+              updateDoc(doc(this.store, Collection.boards, this.board!.id), {
+                lists: arrayRemove(result.item.id),
+              }),
+            ]);
+            return promise;
+          });
         }
       }
     });
   }
-
-  // drop(event: CdkDragDrop<IList[] | null>): void {
-  //   if (event.previousContainer === event.container || !event.previousContainer.data || !event.container.data) {
-  //     return;
-  //   }
-  //   const item = event.previousContainer.data[event.previousIndex];
-  //   // runTransaction(this.store, () => {
-  //   //   const promise = Promise.all([
-  //   //     deleteDoc(doc(this.store, event.previousContainer.id, item.id as string)),
-  //   //     addDoc(collection(this.store, event.container.id), item),
-  //   //   ]);
-  //   //   return promise;
-  //   // });
-  //   transferArrayItem(
-  //     event.previousContainer.data,
-  //     event.container.data,
-  //     event.previousIndex,
-  //     event.currentIndex
-  //   );
-  // }
 
   ngOnInit(): void {
     const routeParams = this.activatedRoute.snapshot.paramMap;
@@ -236,6 +198,7 @@ export class BoardPageComponent implements OnInit {
                         });
 
                         const lists: (IList & IBoard)[] = [...tempLists];
+                        console.log(JSON.stringify(lists));
                         tempLists.forEach((list, listInd) => {
                           list.tasks.forEach((task) => {
                             const tt = tasksList.find(
@@ -246,6 +209,8 @@ export class BoardPageComponent implements OnInit {
                             }
                           });
                         });
+
+                        console.log(JSON.stringify(lists));
 
                         this.lists = lists;
                         this.loading = false;
