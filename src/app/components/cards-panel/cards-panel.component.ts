@@ -11,7 +11,7 @@ export class CardsPanelComponent {
   @Input() lists: (IBoard & IList)[] = [];
   @Input() title: string | undefined;
   @Input() loading: boolean = true;
-  @Input() openModal!: (collectionName: Collection, opType: OperationType, list?: IList | IBoard) => Promise<void>;
+  @Input() openModal!: (collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard) => Promise<void>;
   @Input() openConfirmModal!: (collectionName: Collection, opType: OperationType, list?: IList | IBoard) => void;
   @Input() getListsConnectedTo?: (id?: string) => string[];
   @Input() handleSidebarState!: (content?: IList | IBoard | ITask | null) => void;

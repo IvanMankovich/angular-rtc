@@ -13,6 +13,7 @@ import {
   deleteDoc,
   updateDoc,
   collection,
+  serverTimestamp,
 } from '@angular/fire/firestore';
 import {
   onSnapshot,
@@ -28,6 +29,7 @@ import { List } from '../../app.component';
 import { BehaviorSubject } from 'rxjs';
 import { Collection, DialogResult, IBoard, IDialogData, IList, ITask, OperationType } from 'src/app/types/types';
 import { CreateUpdateDialogComponent } from '../create-update-dialog/create-update-dialog.component';
+import { Task } from 'src/app/helpers/classes/Task';
 
 @Component({
   selector: 'app-task-stack',
@@ -64,29 +66,15 @@ export class TaskStackComponent {
         return;
       } else {
         if (result.op === OperationType.create && this.list?.id) {
-          const newList = await addDoc(
+          const newTask = await addDoc(
             collection(this.store, Collection.tasks),
-            result.item
+            { ...new Task({ ...result.item, created: serverTimestamp() }) }
           );
           updateDoc(doc(this.store, Collection.lists, this.list?.id), {
-            tasks: arrayUnion(newList.id),
+            tasks: arrayUnion(newTask.id),
           });
         } else {
-          if (result.item.id && list) {
-            switch (result.op) {
-              case OperationType.update:
-                updateDoc(doc(this.store, Collection.tasks, result.item.id), { ...result.item });
-                break;
-              case OperationType.delete:
-                updateDoc(doc(this.store, Collection.lists, list.id), {
-                  tasks: arrayRemove(result.item.id),
-                });
-                deleteDoc(doc(this.store, Collection.tasks, result.item.id));
-                break;
-              default:
-                break;
-            }
-          }
+          updateDoc(doc(this.store, Collection.tasks, result.item.id), { ...new Task({ ...result.item, updated: serverTimestamp() }) });
         }
       }
     });
@@ -138,10 +126,4 @@ export class TaskStackComponent {
       event.currentIndex
     );
   }
-}
-
-export interface ITaskStack {
-  listId: string;
-  listName: string;
-  listItems: BehaviorSubject<ITask[]>;
 }

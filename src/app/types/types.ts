@@ -1,9 +1,13 @@
+import {
+  FieldValue,
+} from '@angular/fire/firestore';
+
 export interface IBaseElement {
   id: string;
   title: string;
   description?: string;
-  created?: Date;
-  updated?: Date;
+  created?: FieldValue;
+  updated?: FieldValue;
 }
 
 export interface IBoard extends IBaseElement {
@@ -17,8 +21,10 @@ export interface IList extends IBaseElement {
 }
 
 export interface ITask extends IBaseElement {
-  complete: boolean;
+  complete?: boolean;
 }
+
+export type ICardItem = IBoard & IList & ITask;
 
 export interface DialogData {
   item: IList & IBoard;
