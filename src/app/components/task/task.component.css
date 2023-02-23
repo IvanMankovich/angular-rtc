@@ -29,3 +29,20 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.task-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+mat-expansion-panel-header,
+mat-expansion-panel-header.mat-expanded {
+  height: 1.2rem;
+  justify-content: center;
+}
+
+::ng-deep .mat-expansion-panel-header > *:first-child {
+  display: none;
+}

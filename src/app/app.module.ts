@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
@@ -81,6 +82,7 @@ import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.com
     AppRoutingModule,
     MatCheckboxModule,
     MatDividerModule,
+    MatExpansionModule,
   ],
   declarations: [
     AppComponent,
