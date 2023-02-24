@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import {
   Firestore,
   addDoc,
@@ -15,21 +15,24 @@ import {
   writeBatch,
   WriteBatch,
   FieldValue,
+  onSnapshot
 } from '@angular/fire/firestore';
 import { Collection, IBoard, ICardItem, IList, ITask, OperationType } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
-import { onSnapshot } from '@firebase/firestore';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 import { DialogResult, IDialogData } from 'src/app/types/types';
 import { Board } from 'src/app/helpers/classes/Board';
+import { BoardService } from 'src/app/services/boardService/board.service';
+import { map, of } from 'rxjs';
+import { ListService } from 'src/app/services/listService/list.service';
 
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
   styleUrls: ['./main-page.component.css'],
 })
-export class MainPageComponent implements OnInit {
+export class MainPageComponent implements OnInit, OnDestroy {
   title: string = 'Main';
   boards: (IList & IBoard)[] = [];
   loading: boolean = true;
@@ -38,7 +41,7 @@ export class MainPageComponent implements OnInit {
   public CollectionNames = Collection;
   public OperationTypes = OperationType;
 
-  constructor(private store: Firestore, private dialog: MatDialog) { }
+  constructor(private store: Firestore, private dialog: MatDialog, private boardService: BoardService, private listService: ListService) { }
 
   async openModal(collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard): Promise<void> {
     const boardDialogData: IDialogData = {
@@ -58,20 +61,9 @@ export class MainPageComponent implements OnInit {
         return;
       } else {
         if (result.op === OperationType.create) {
-          await addDoc(collection(this.store, Collection.boards), {
-            ...new Board({
-              ...result.item,
-              created: serverTimestamp(),
-              lists: [],
-            })
-          });
+          this.boardService.addBoard(result.item);
         } else {
-          updateDoc(doc(this.store, Collection.boards, result.item.id), {
-            ...new Board({
-              ...result.item,
-              updated: serverTimestamp(),
-            })
-          });
+          this.boardService.updateBoard(result.item);
         }
       }
     });
@@ -89,58 +81,50 @@ export class MainPageComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, boardDialogData);
     dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
       if (result?.item?.id && result.op === OperationType.delete) {
-        if (result.item?.lists?.length) {
-          const listsQuery = query(
-            collection(this.store, Collection.lists),
-            where(documentId(), 'in', result.item?.lists)
-          );
-          const listsQuerySnapshot = await getDocs(listsQuery);
-          listsQuerySnapshot.forEach(async (curList) => {
-            const { tasks } = (curList.data() as IList);
+        // if (result.item?.lists?.length) {
+        //   const listsQuery = query(
+        //     collection(this.store, Collection.lists),
+        //     where(documentId(), 'in', result.item?.lists)
+        //   );
+        //   const listsQuerySnapshot = await getDocs(listsQuery);
+        //   listsQuerySnapshot.forEach(async (curList) => {
+        //     const { tasks } = (curList.data() as IList);
 
-            if (tasks.length) {
-              const batch: WriteBatch = writeBatch(this.store);
+        //     if (tasks.length) {
+        //       const batch: WriteBatch = writeBatch(this.store);
 
-              const tasksQuery = query(
-                collection(this.store, Collection.tasks),
-                where(documentId(), 'in', tasks)
-              );
+        //       const tasksQuery = query(
+        //         collection(this.store, Collection.tasks),
+        //         where(documentId(), 'in', tasks)
+        //       );
 
-              const tasksQuerySnapshot = await getDocs(tasksQuery);
-              tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
-              batch.commit();
-            }
+        //       const tasksQuerySnapshot = await getDocs(tasksQuery);
+        //       tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
+        //       batch.commit();
+        //     }
 
-            deleteDoc(doc(this.store, Collection.lists, curList.id));
-          });
-        }
-        deleteDoc(doc(this.store, Collection.boards, result.item.id));
+        //     this.listService.deleteList(curList.id);
+        //   });
+        // }
+
+        this.boardService.deleteBoard(result.item);
       }
     });
   }
 
   ngOnInit(): void {
-    onSnapshot(
-      collection(this.store, Collection.boards),
-      (querySnapshot) => {
-        const tempBoards: (IList & IBoard)[] = [];
-        querySnapshot.forEach((doc) => {
-          tempBoards.push({
-            id: doc.id,
-            ...doc.data(),
-          } as (IList & IBoard));
-        });
-        this.boards = tempBoards;
-        this.loading = false;
-      },
-      (error) => {
-        this.loading = false;
-        console.error(error);
-      }
-    );
+    this.boardService.loading.subscribe(value => this.loading = value);
+    this.boardService.result.subscribe(value => this.boards = value as (IList & IBoard)[]);
+    this.boardService.subscribeOnBoardsChange();
   }
 
   handleSidebarState(content?: IList | IBoard | ITask | null): void {
     this.sidebar = content ? content : null;
+  }
+
+  ngOnDestroy(): void {
+    this.boardService.loading.unsubscribe();
+    this.boardService.result.unsubscribe();
+    this.boardService.unsubscribe();
   }
 }
