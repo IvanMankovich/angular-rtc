@@ -94,4 +94,24 @@ export class TaskService {
     tasksQuerySnapshot.forEach(task => tasksBatch.delete(task.ref))
     tasksBatch.commit();
   }
+
+  async getTasks(ids: string[]): Promise<ITask[]> {
+    const tasksQuery = query(
+      collection(this.store, Collection.tasks),
+      where(documentId(), 'in', ids)
+    );
+
+    const tasksQuerySnapshot = await getDocs(tasksQuery);
+
+    const tasksList: ITask[] = [];
+    tasksQuerySnapshot.forEach((doc) => {
+      const list = {
+        id: doc.id,
+        ...doc.data(),
+      } as ITask;
+      tasksList.push(list);
+    });
+
+    return tasksList;
+  }
 }
