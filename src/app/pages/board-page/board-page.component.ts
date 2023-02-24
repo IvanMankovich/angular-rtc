@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Firestore,
@@ -34,13 +34,14 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 import { List } from 'src/app/helpers/classes/List';
+import { BoardService } from 'src/app/services/boardService/board.service';
 
 @Component({
   selector: 'app-board-page',
   templateUrl: './board-page.component.html',
   styleUrls: ['./board-page.component.css'],
 })
-export class BoardPageComponent implements OnInit {
+export class BoardPageComponent implements OnInit, OnDestroy {
   title = 'Board';
   loading = false;
   board?: IList & IBoard;
@@ -54,7 +55,8 @@ export class BoardPageComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private store: Firestore,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private boardService: BoardService
   ) { }
 
   async openModal(collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard): Promise<void> {
@@ -149,98 +151,12 @@ export class BoardPageComponent implements OnInit {
       this.loading = false;
       this.router.navigate(['/']);
     } else {
-      onSnapshot(
-        doc(this.store, Collection.boards, boardIdFromRoute),
-        (boardsQuerySnapshot) => {
-          if (boardsQuerySnapshot.exists()) {
-            this.board = {
-              ...boardsQuerySnapshot?.data?.(),
-              id: boardsQuerySnapshot.id,
-            } as (IList & IBoard);
-
-            if (this.board.lists.length) {
-              const listsQuery = query(
-                collection(this.store, Collection.lists),
-                where(documentId(), 'in', this.board.lists)
-              );
-              onSnapshot(
-                listsQuery,
-                (listsQuerySnapshot) => {
-                  const tempLists: (IList & IBoard)[] = [];
-                  const taskIds: string[] = [];
-                  listsQuerySnapshot.forEach((doc) => {
-                    const list = {
-                      id: doc.id,
-                      ...doc.data(),
-                      tasksRefs: [] as ITask[],
-                      otherListsTasksRefs: [] as ITask[][],
-                    } as (IList & IBoard);
-                    tempLists.push(list);
-                    if (list.tasks?.length) {
-                      taskIds.push(...list.tasks);
-                    }
-                  });
-                  if (taskIds.length) {
-                    const tasksQuery = query(
-                      collection(this.store, Collection.tasks),
-                      where(documentId(), 'in', taskIds)
-                    );
-                    onSnapshot(
-                      tasksQuery,
-                      (tasksQuerySnapshot) => {
-                        const tasksList: ITask[] = [];
-                        tasksQuerySnapshot.forEach((doc) => {
-                          const list = {
-                            id: doc.id,
-                            ...doc.data(),
-                          } as ITask;
-                          tasksList.push(list);
-                        });
-
-                        const lists: (IList & IBoard)[] = [...tempLists];
-                        tempLists.forEach((list, listInd) => {
-                          lists[listInd].tasksRefs.length = 0;
-                          list.tasks.forEach((task) => {
-                            const tt = tasksList.find(
-                              (tempTask) => tempTask.id === task
-                            );
-                            if (tt) {
-                              lists[listInd].tasksRefs.push(tt);
-                            }
-                          });
-                        });
-
-                        this.lists = lists;
-                        this.loading = false;
-                      },
-                      (error) => {
-                        this.loading = false;
-                        console.error(error);
-                      }
-                    );
-                  } else {
-                    this.lists = tempLists;
-                    this.loading = false;
-                  }
-                },
-                (error) => {
-                  this.loading = false;
-                  console.error(error);
-                }
-              );
-            } else {
-              this.loading = false;
-            }
-          } else {
-            this.loading = false;
-            this.router.navigate(['/']);
-          }
-        },
-        (error) => {
-          this.loading = false;
-          console.error(error);
-        }
-      );
+      this.boardService.subscribeOnBoardChange(boardIdFromRoute);
+      this.boardService.loading.subscribe(value => this.loading = value);
+      this.boardService.result.subscribe(value => {
+        this.board = value as (IList & IBoard);
+        this.lists = value?.listsRefs ? value.listsRefs as (IList & IBoard)[] : [];
+      });
     }
   }
 
@@ -250,5 +166,11 @@ export class BoardPageComponent implements OnInit {
 
   handleSidebarState(content?: IList | IBoard | ITask | null): void {
     this.sidebar = content ? content : null;
+  }
+
+  ngOnDestroy(): void {
+    // this.boardService.loading.unsubscribe();
+    // this.boardService.result.unsubscribe();
+    // this.boardService.unsubscribe();
   }
 }

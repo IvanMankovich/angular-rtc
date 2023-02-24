@@ -29,7 +29,9 @@ import { ListService } from '../listService/list.service';
 export class BoardService {
   loading = new BehaviorSubject<boolean>(true);
   error = new BehaviorSubject<string>('');
-  result = new BehaviorSubject<IBoard | IList | ITask | (IBoard | IList | ITask)[]>([]);
+  result = new BehaviorSubject<(IList & IBoard) | null>(null);
+  results = new BehaviorSubject<(IBoard | IList | ITask)[]>([]);
+
   unsubscribe!: Unsubscribe;
 
   constructor(private store: Firestore, private listService: ListService) { }
@@ -54,7 +56,36 @@ export class BoardService {
           } as (IList & IBoard));
         });
 
-        this.result.next(tempBoards);
+        this.results.next(tempBoards);
+        this.loading.next(false);
+      },
+      (error) => {
+        this.loading.next(false);
+        console.error(error);
+      }
+    );
+  }
+
+  subscribeOnBoardChange(userBoard: string): void {
+    this.unsubscribe = onSnapshot(
+      doc(this.store, Collection.boards, userBoard),
+      async (boardQuerySnapshot) => {
+        if (boardQuerySnapshot.exists()) {
+          const { lists } = boardQuerySnapshot.data();
+          if (lists.length) {
+            const listRefs = await this.listService.getLists(lists);
+            this.result.next({
+              ...boardQuerySnapshot.data(),
+              id: boardQuerySnapshot.id,
+              listsRefs: listRefs,
+            } as (IList & IBoard));
+          } else {
+            this.result.next({
+              ...boardQuerySnapshot.data(),
+              id: boardQuerySnapshot.id,
+            } as (IList & IBoard));
+          }
+        }
         this.loading.next(false);
       },
       (error) => {

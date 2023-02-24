@@ -12,6 +12,7 @@ export interface IBaseElement {
 
 export interface IBoard extends IBaseElement {
   lists: string[];
+  listsRefs: IList[];
 }
 
 export interface IList extends IBaseElement {

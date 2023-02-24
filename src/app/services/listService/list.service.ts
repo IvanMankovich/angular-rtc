@@ -55,7 +55,6 @@ export class ListService {
         });
 
         this.result.next(tempBoards);
-        console.log(tempBoards);
         this.loading.next(false);
       },
       (error) => {
@@ -111,5 +110,47 @@ export class ListService {
     if (tasksIds.length) {
       this.taskService.deleteTasks(tasksIds);
     }
+  }
+
+  async getLists(ids: string[]): Promise<(IList)[]> {
+    const listsQuery = query(
+      collection(this.store, Collection.lists),
+      where(documentId(), 'in', ids)
+    );
+
+    const listsQuerySnapshot = await getDocs(listsQuery);
+
+    const tempLists: (IList)[] = [];
+    const taskIds: string[] = [];
+    listsQuerySnapshot.forEach((doc) => {
+      const list = {
+        id: doc.id,
+        ...doc.data(),
+        tasksRefs: [] as ITask[],
+      } as (IList);
+      tempLists.push(list);
+      if (list.tasks?.length) {
+        taskIds.push(...list.tasks);
+      }
+    });
+
+    if (taskIds.length) {
+      const tasksList = await this.taskService.getTasks(taskIds);
+
+      const lists: (IList)[] = [...tempLists];
+      tempLists.forEach((list, listInd) => {
+        lists[listInd].tasksRefs.length = 0;
+        list.tasks.forEach((task) => {
+          const tt = tasksList.find(
+            (tempTask) => tempTask.id === task
+          );
+          if (tt) {
+            lists[listInd].tasksRefs.push(tt);
+          }
+        });
+      });
+    }
+
+    return tempLists;
   }
 }
