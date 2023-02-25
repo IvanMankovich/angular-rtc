@@ -40,7 +40,7 @@ export class BoardService {
     const listsQuery = userBoards?.length
       ? query(
         collection(this.store, Collection.boards),
-        where(documentId(), 'in', userBoards?.length)
+        where(documentId(), 'in', userBoards)
       )
       : query(
         collection(this.store, Collection.boards),
@@ -71,20 +71,10 @@ export class BoardService {
       doc(this.store, Collection.boards, userBoard),
       async (boardQuerySnapshot) => {
         if (boardQuerySnapshot.exists()) {
-          const { lists } = boardQuerySnapshot.data();
-          if (lists.length) {
-            const listRefs = await this.listService.getLists(lists);
-            this.result.next({
-              ...boardQuerySnapshot.data(),
-              id: boardQuerySnapshot.id,
-              listsRefs: listRefs,
-            } as (IList & IBoard));
-          } else {
-            this.result.next({
-              ...boardQuerySnapshot.data(),
-              id: boardQuerySnapshot.id,
-            } as (IList & IBoard));
-          }
+          this.result.next({
+            ...boardQuerySnapshot.data(),
+            id: boardQuerySnapshot.id,
+          } as (IList & IBoard));
         }
         this.loading.next(false);
       },
