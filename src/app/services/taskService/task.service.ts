@@ -29,6 +29,7 @@ export class TaskService {
   loading = new BehaviorSubject<boolean>(true);
   error = new BehaviorSubject<string>('');
   result = new BehaviorSubject<IBoard | IList | ITask | (IBoard | IList | ITask)[]>([]);
+  results = new BehaviorSubject<IBoard | IList | ITask | (IBoard | IList | ITask)[]>([]);
   unsubscribe!: Unsubscribe;
 
   constructor(private store: Firestore) { }
@@ -113,5 +114,31 @@ export class TaskService {
     });
 
     return tasksList;
+  }
+
+  subscribeOnTasksChange(tasksIds: string[]): void {
+    const tasksQuery = query(
+      collection(this.store, Collection.tasks),
+      where(documentId(), 'in', tasksIds)
+    );
+    this.unsubscribe = onSnapshot(
+      tasksQuery,
+      (tasksQuerySnapshot) => {
+        const tempTasks: ITask[] = [];
+        tasksQuerySnapshot.forEach((doc) => {
+          tempTasks.push({
+            id: doc.id,
+            ...doc.data(),
+          } as ITask);
+        });
+
+        this.results.next(tempTasks);
+        this.loading.next(false);
+      },
+      (error) => {
+        this.loading.next(false);
+        console.error(error);
+      }
+    );
   }
 }

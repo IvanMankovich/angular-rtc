@@ -35,6 +35,9 @@ import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confir
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 import { List } from 'src/app/helpers/classes/List';
 import { BoardService } from 'src/app/services/boardService/board.service';
+import { ListService } from 'src/app/services/listService/list.service';
+import { TaskService } from 'src/app/services/taskService/task.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-board-page',
@@ -44,19 +47,25 @@ import { BoardService } from 'src/app/services/boardService/board.service';
 export class BoardPageComponent implements OnInit, OnDestroy {
   title = 'Board';
   loading = false;
-  board?: IList & IBoard;
+  board!: IList & IBoard;
   lists: (IList & IBoard)[] = [];
   sidebar: IList | IBoard | ITask | null = null;
 
   public CollectionNames = Collection;
   public OperationTypes = OperationType;
 
+  private boardSub!: Subscription;
+  private listsSub!: Subscription;
+  private tasksSub!: Subscription;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private store: Firestore,
     private dialog: MatDialog,
-    private boardService: BoardService
+    private boardService: BoardService,
+    private listService: ListService,
+    private taskService: TaskService,
   ) { }
 
   async openModal(collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard): Promise<void> {
@@ -144,6 +153,9 @@ export class BoardPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.boardService?.unsubscribe?.();
+    this.listService?.unsubscribe?.();
+    this.taskService?.unsubscribe?.();
     const routeParams = this.activatedRoute.snapshot.paramMap;
     const boardIdFromRoute = routeParams.get('boardId') || '';
     this.loading = true;
@@ -152,10 +164,43 @@ export class BoardPageComponent implements OnInit, OnDestroy {
       this.router.navigate(['/']);
     } else {
       this.boardService.subscribeOnBoardChange(boardIdFromRoute);
-      this.boardService.loading.subscribe(value => this.loading = value);
-      this.boardService.result.subscribe(value => {
-        this.board = value as (IList & IBoard);
-        this.lists = value?.listsRefs ? value.listsRefs as (IList & IBoard)[] : [];
+      this.boardService.loading.subscribe(loadingState => this.loading = loadingState);
+      this.boardSub = this.boardService.result.subscribe(board => {
+        this.board = board as (IList & IBoard);
+        if (board?.lists?.length) {
+          this.listService.unsubscribe?.();
+          this.listService.subscribeOnListsChange(this.board?.lists);
+          const tasksIds: string[] = [];
+          const tempLists: (IList)[] = [];
+
+          this.listsSub = this.listService.result.subscribe(lists => {
+            tasksIds.length = 0;
+            (lists as (IList & IBoard)[]).forEach((list) => {
+              tempLists.push({ ...list, tasksRefs: [] });
+              tasksIds.push(...list?.tasks);
+            });
+
+            if (tasksIds.length) {
+              this.taskService.unsubscribe?.();
+              this.taskService.subscribeOnTasksChange(tasksIds);
+              this.tasksSub = this.taskService.results.subscribe(tasks => {
+                (lists as (IList & IBoard)[]).forEach((list: IList, listInd: number) => {
+                  tempLists[listInd].tasksRefs.length = 0;
+                  list.tasks.forEach((task) => {
+                    const currentTask = (tasks as ITask[]).find(
+                      (tempTask) => tempTask.id === task
+                    );
+                    if (currentTask) {
+                      tempLists[listInd].tasksRefs.push(currentTask);
+                    }
+                  });
+                });
+              });
+            }
+
+            this.lists = tempLists as (IList & IBoard)[];
+          });
+        }
       });
     }
   }
@@ -169,8 +214,11 @@ export class BoardPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // this.boardService.loading.unsubscribe();
-    // this.boardService.result.unsubscribe();
-    // this.boardService.unsubscribe();
+    this.boardSub?.unsubscribe?.();
+    this.listsSub?.unsubscribe?.();
+    this.tasksSub?.unsubscribe?.();
+    this.boardService?.unsubscribe?.();
+    this.listService?.unsubscribe?.();
+    this.taskService?.unsubscribe?.();
   }
 }
