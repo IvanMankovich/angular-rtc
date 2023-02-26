@@ -66,8 +66,9 @@ export class BoardService {
     );
   }
 
-  subscribeOnBoardChange(userBoard: string): void {
-    this.unsubscribe = onSnapshot(
+  subscribeOnBoardChange(userBoard: string): Unsubscribe {
+    this.result.next(null);
+    return onSnapshot(
       doc(this.store, Collection.boards, userBoard),
       async (boardQuerySnapshot) => {
         if (boardQuerySnapshot.exists()) {

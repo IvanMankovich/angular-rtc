@@ -38,6 +38,7 @@ import { BoardService } from 'src/app/services/boardService/board.service';
 import { ListService } from 'src/app/services/listService/list.service';
 import { TaskService } from 'src/app/services/taskService/task.service';
 import { Subscription } from 'rxjs';
+import { Unsubscribe } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-board-page',
@@ -47,7 +48,7 @@ import { Subscription } from 'rxjs';
 export class BoardPageComponent implements OnInit, OnDestroy {
   title = 'Board';
   loading = false;
-  board!: IList & IBoard;
+  board?: IList & IBoard;
   lists: (IList & IBoard)[] = [];
   sidebar: IList | IBoard | ITask | null = null;
 
@@ -57,6 +58,10 @@ export class BoardPageComponent implements OnInit, OnDestroy {
   private boardSub!: Subscription;
   private listsSub!: Subscription;
   private tasksSub!: Subscription;
+
+  private unsubBoard!: Unsubscribe;
+  private unsubLists!: Unsubscribe;
+  private unsubTasks!: Unsubscribe;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -163,26 +168,26 @@ export class BoardPageComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.router.navigate(['/']);
     } else {
-      this.boardService.subscribeOnBoardChange(boardIdFromRoute);
+      this.unsubBoard = this.boardService.subscribeOnBoardChange(boardIdFromRoute);
       this.boardService.loading.subscribe(loadingState => this.loading = loadingState);
       this.boardSub = this.boardService.result.subscribe(board => {
         this.board = board as (IList & IBoard);
+        const tempLists: (IList)[] = [];
+
         if (board?.lists?.length) {
-          this.listService.unsubscribe?.();
-          this.listService.subscribeOnListsChange(this.board?.lists);
+          this.unsubLists = this.listService.subscribeOnListsChange(this.board?.lists);
           const tasksIds: string[] = [];
-          const tempLists: (IList)[] = [];
 
           this.listsSub = this.listService.result.subscribe(lists => {
             tasksIds.length = 0;
+            tempLists.length = 0;
             (lists as (IList & IBoard)[]).forEach((list) => {
               tempLists.push({ ...list, tasksRefs: [] });
               tasksIds.push(...list?.tasks);
             });
 
             if (tasksIds.length) {
-              this.taskService.unsubscribe?.();
-              this.taskService.subscribeOnTasksChange(tasksIds);
+              this.unsubTasks = this.taskService.subscribeOnTasksChange(tasksIds);
               this.tasksSub = this.taskService.results.subscribe(tasks => {
                 (lists as (IList & IBoard)[]).forEach((list: IList, listInd: number) => {
                   tempLists[listInd].tasksRefs.length = 0;
@@ -214,6 +219,10 @@ export class BoardPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.unsubBoard?.();
+    this.unsubLists?.();
+    this.unsubTasks?.();
+
     this.boardSub?.unsubscribe?.();
     this.listsSub?.unsubscribe?.();
     this.tasksSub?.unsubscribe?.();

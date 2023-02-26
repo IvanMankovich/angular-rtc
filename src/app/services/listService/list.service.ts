@@ -34,12 +34,13 @@ export class ListService {
 
   constructor(private store: Firestore, private taskService: TaskService) { }
 
-  subscribeOnListsChange(listsIds: string[]): void {
+  subscribeOnListsChange(listsIds: string[]): Unsubscribe {
+    this.result.next([]);
     const listsQuery = query(
       collection(this.store, Collection.lists),
       where(documentId(), 'in', listsIds)
     );
-    this.unsubscribe = onSnapshot(
+    return onSnapshot(
       listsQuery,
       (querySnapshot) => {
         const tempLists: (IList & IBoard)[] = [];
