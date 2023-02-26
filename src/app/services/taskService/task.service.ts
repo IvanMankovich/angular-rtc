@@ -116,12 +116,13 @@ export class TaskService {
     return tasksList;
   }
 
-  subscribeOnTasksChange(tasksIds: string[]): void {
+  subscribeOnTasksChange(tasksIds: string[]): Unsubscribe {
+    this.result.next([]);
     const tasksQuery = query(
       collection(this.store, Collection.tasks),
       where(documentId(), 'in', tasksIds)
     );
-    this.unsubscribe = onSnapshot(
+    return onSnapshot(
       tasksQuery,
       (tasksQuerySnapshot) => {
         const tempTasks: ITask[] = [];
