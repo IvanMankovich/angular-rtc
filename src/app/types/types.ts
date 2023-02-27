@@ -8,6 +8,7 @@ export interface IBaseElement {
   description?: string;
   created?: FieldValue | Timestamp;
   updated?: FieldValue | Timestamp;
+  availableFor?: string[];
 }
 
 export interface IBoard extends IBaseElement {

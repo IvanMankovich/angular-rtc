@@ -23,6 +23,7 @@ import {
 import { BehaviorSubject } from 'rxjs';
 import { Board } from '../../helpers/classes/Board';
 import { Collection, IBoard, IList, ITask } from '../../types/types';
+import { AuthService } from '../authService/auth.service';
 import { ListService } from '../listService/list.service';
 
 @Injectable({
@@ -36,36 +37,34 @@ export class BoardService {
 
   unsubscribe!: Unsubscribe;
 
-  constructor(private store: Firestore, private listService: ListService) { }
+  constructor(private store: Firestore, private listService: ListService, private authService: AuthService) { }
 
-  subscribeOnBoardsChange(userBoards?: string[]): void {
-    const listsQuery = userBoards?.length
-      ? query(
+  subscribeOnBoardsChange(): void {
+    if (this.authService.userData?.uid) {
+      const listsQuery = query(
         collection(this.store, Collection.boards),
-        where(documentId(), 'in', userBoards)
-      )
-      : query(
-        collection(this.store, Collection.boards),
+        where('availableFor', 'array-contains', this.authService.userData?.uid as string)
       );
-    this.unsubscribe = onSnapshot(
-      listsQuery,
-      (querySnapshot) => {
-        const tempBoards: (IList & IBoard)[] = [];
-        querySnapshot.forEach((doc) => {
-          tempBoards.push({
-            id: doc.id,
-            ...doc.data(),
-          } as (IList & IBoard));
-        });
+      this.unsubscribe = onSnapshot(
+        listsQuery,
+        (querySnapshot) => {
+          const tempBoards: (IList & IBoard)[] = [];
+          querySnapshot.forEach((doc) => {
+            tempBoards.push({
+              id: doc.id,
+              ...doc.data(),
+            } as (IList & IBoard));
+          });
 
-        this.results.next(tempBoards);
-        this.loading.next(false);
-      },
-      (error) => {
-        this.loading.next(false);
-        console.error(error);
-      }
-    );
+          this.results.next(tempBoards);
+          this.loading.next(false);
+        },
+        (error) => {
+          this.loading.next(false);
+          console.error(error);
+        }
+      );
+    }
   }
 
   subscribeOnBoardChange(userBoard: string): Unsubscribe {

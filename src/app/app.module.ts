@@ -52,6 +52,8 @@ import { ControlsPanelComponent } from './components/controls-panel/controls-pan
 import { CardsPanelComponent } from './components/cards-panel/cards-panel.component';
 import { MainComponent } from './components/main/main.component';
 import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.component';
+import { SignInComponent } from './components/sign-in/sign-in.component';
+import { AuthService } from './services/authService/auth.service';
 
 @NgModule({
   imports: [
@@ -102,7 +104,9 @@ import { MainWrapperComponent } from './components/main-wrapper/main-wrapper.com
     CardsPanelComponent,
     MainComponent,
     MainWrapperComponent,
+    SignInComponent,
   ],
   bootstrap: [AppComponent],
+  providers: [AuthService]
 })
 export class AppModule { }
