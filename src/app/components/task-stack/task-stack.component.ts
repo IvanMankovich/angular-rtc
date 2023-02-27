@@ -1,23 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  Firestore,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  collection,
-  serverTimestamp,
-} from '@angular/fire/firestore';
-import {
-  doc,
-  arrayUnion,
-  arrayRemove,
-  runTransaction,
-} from '@firebase/firestore';
 import { Collection, DialogResult, IBoard, IDialogData, IList, ITask, OperationType } from 'src/app/types/types';
 import { CreateUpdateDialogComponent } from '../create-update-dialog/create-update-dialog.component';
-import { Task } from 'src/app/helpers/classes/Task';
+import { TaskService } from 'src/app/services/taskService/task.service';
+import { ListService } from 'src/app/services/listService/list.service';
 
 @Component({
   selector: 'app-task-stack',
@@ -35,7 +22,7 @@ export class TaskStackComponent {
   public CollectionNames = Collection;
   public OperationTypes = OperationType;
 
-  constructor(private dialog: MatDialog, private store: Firestore) { }
+  constructor(private dialog: MatDialog, private taskService: TaskService, private listService: ListService) { }
 
   openTaskModal(collectionName: Collection, opType: OperationType, list?: ITask): void {
     const listDialogData: IDialogData = {
@@ -44,9 +31,6 @@ export class TaskStackComponent {
         modalTitle: opType === OperationType.update ? `Edit task ${list?.title}` : `Create new task`,
       },
     };
-    if (list) {
-      listDialogData.data.enableDelete = list;
-    }
 
     const dialogRef = this.dialog.open(CreateUpdateDialogComponent, listDialogData);
     dialogRef.afterClosed().subscribe(async (result: DialogResult) => {
@@ -54,15 +38,9 @@ export class TaskStackComponent {
         return;
       } else {
         if (result.op === OperationType.create && this.list?.id) {
-          const newTask = await addDoc(
-            collection(this.store, Collection.tasks),
-            { ...new Task({ ...result.item, created: serverTimestamp() }) }
-          );
-          updateDoc(doc(this.store, Collection.lists, this.list?.id), {
-            tasks: arrayUnion(newTask.id),
-          });
+          await this.taskService.addTask(result.item, this.list?.id);
         } else {
-          updateDoc(doc(this.store, Collection.tasks, result.item.id), { ...new Task({ ...result.item, updated: serverTimestamp() }) });
+          this.taskService.updateTask(result.item);
         }
       }
     });
@@ -70,27 +48,15 @@ export class TaskStackComponent {
 
   deleteTask(collectionName: Collection, opType: OperationType, item?: ITask): void {
     if (item?.id && this.list?.id) {
-      updateDoc(doc(this.store, Collection.lists, this.list.id), {
-        tasks: arrayRemove(item.id),
-      });
-      deleteDoc(doc(this.store, Collection.tasks, item.id));
+      this.taskService.deleteTask(item.id, this.list.id);
     }
   }
 
   onChange(item: ITask): void {
-    updateDoc(doc(this.store, Collection.tasks, item.id), {
-      complete: !item.complete,
-    });
+    this.taskService.changeTaskStatus({ ...item });
   }
 
-  drop(event: CdkDragDrop<ITask[] | undefined>): void {
-    console.log(
-      event.previousContainer === event.container,
-      event.previousContainer,
-      event.container,
-      event.previousContainer.data,
-      event.container.data
-    );
+  async drop(event: CdkDragDrop<ITask[] | undefined>): Promise<void> {
     if (
       event.previousContainer === event.container ||
       !event.previousContainer.data ||
@@ -99,20 +65,9 @@ export class TaskStackComponent {
       return;
     }
     const item = event.previousContainer.data[event.previousIndex];
-    runTransaction(this.store, () => {
-      const promise = Promise.all([
-        updateDoc(
-          doc(this.store, Collection.lists, event.previousContainer.id),
-          {
-            tasks: arrayRemove(item.id),
-          }
-        ),
-        updateDoc(doc(this.store, Collection.lists, event.container.id), {
-          tasks: arrayUnion(item.id),
-        }),
-      ]);
-      return promise;
-    });
+
+    await this.listService.replaceTask(item.id, event.previousContainer.id, event.container.id)
+
     transferArrayItem(
       event.previousContainer.data,
       event.container.data,

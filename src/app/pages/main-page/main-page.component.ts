@@ -1,11 +1,10 @@
-import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Collection, IBoard, ICardItem, IList, ITask, OperationType } from 'src/app/types/types';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Collection, IBoard, IList, ITask, OperationType } from 'src/app/types/types';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
 import { DialogResult, IDialogData } from 'src/app/types/types';
 import { BoardService } from 'src/app/services/boardService/board.service';
-import { ListService } from 'src/app/services/listService/list.service';
 
 @Component({
   selector: 'app-main-page',
@@ -21,7 +20,7 @@ export class MainPageComponent implements OnInit, OnDestroy {
   public CollectionNames = Collection;
   public OperationTypes = OperationType;
 
-  constructor(private dialog: MatDialog, private boardService: BoardService, private listService: ListService) { }
+  constructor(private dialog: MatDialog, private boardService: BoardService) { }
 
   async openModal(collectionName: Collection, opType: OperationType.create | OperationType.update, list?: IList | IBoard): Promise<void> {
     const boardDialogData: IDialogData = {

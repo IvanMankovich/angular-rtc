@@ -14,12 +14,13 @@ import {
   runTransaction,
   writeBatch,
   WriteBatch,
-  FieldValue,
   onSnapshot,
-  Unsubscribe
+  Unsubscribe,
+  arrayUnion,
+  arrayRemove
 } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
-import { Board } from '../../helpers/classes/Board';
+import { List } from 'src/app/helpers/classes/List';
 import { Collection, IBoard, IList, ITask } from '../../types/types';
 import { TaskService } from '../taskService/task.service';
 
@@ -61,27 +62,20 @@ export class ListService {
     );
   }
 
-  addBoard(boardData: IBoard & IList): void {
-    addDoc(collection(this.store, Collection.boards), {
-      ...new Board({
-        ...boardData,
-        created: serverTimestamp(),
-        lists: [],
-      })
-    });
-  }
+  async deleteList(list: IList & IBoard, boardId: string): Promise<void> {
+    if (list.tasks.length) {
+      this.taskService.deleteTasks(list.tasks);
+    }
 
-  updateBoard(boardData: IBoard & IList): void {
-    updateDoc(doc(this.store, Collection.boards, boardData.id), {
-      ...new Board({
-        ...boardData,
-        updated: serverTimestamp(),
-      })
+    runTransaction(this.store, () => {
+      const promise = Promise.all([
+        deleteDoc(doc(this.store, Collection.lists, list.id)),
+        updateDoc(doc(this.store, Collection.boards, boardId), {
+          lists: arrayRemove(list.id),
+        }),
+      ]);
+      return promise;
     });
-  }
-
-  deleteList(id: string) {
-    deleteDoc(doc(this.store, Collection.lists, id));
   }
 
   async deleteLists(ids: string[]): Promise<void> {
@@ -109,45 +103,46 @@ export class ListService {
     }
   }
 
-  async getLists(ids: string[]): Promise<(IList)[]> {
-    const listsQuery = query(
+  async addList(list: IList & IBoard, boardId: string): Promise<void> {
+    const newList = await addDoc(
       collection(this.store, Collection.lists),
-      where(documentId(), 'in', ids)
+      {
+        ...new List({
+          ...list,
+          created: serverTimestamp(),
+          tasks: [],
+        })
+      }
     );
 
-    const listsQuerySnapshot = await getDocs(listsQuery);
-
-    const tempLists: (IList)[] = [];
-    const taskIds: string[] = [];
-    listsQuerySnapshot.forEach((doc) => {
-      const list = {
-        id: doc.id,
-        ...doc.data(),
-        tasksRefs: [] as ITask[],
-      } as (IList);
-      tempLists.push(list);
-      if (list.tasks?.length) {
-        taskIds.push(...list.tasks);
-      }
+    updateDoc(doc(this.store, Collection.boards, boardId), {
+      lists: arrayUnion(newList.id),
     });
+  }
 
-    if (taskIds.length) {
-      const tasksList = await this.taskService.getTasks(taskIds);
+  updateList(list: IList & IBoard): void {
+    updateDoc(doc(this.store, Collection.lists, list.id), {
+      ...new List({
+        ...list,
+        updated: serverTimestamp(),
+      })
+    });
+  }
 
-      const lists: (IList)[] = [...tempLists];
-      tempLists.forEach((list, listInd) => {
-        lists[listInd].tasksRefs.length = 0;
-        list.tasks.forEach((task) => {
-          const tt = tasksList.find(
-            (tempTask) => tempTask.id === task
-          );
-          if (tt) {
-            lists[listInd].tasksRefs.push(tt);
+  async replaceTask(itemId: string, prevContId: string, curContId: string): Promise<void> {
+    await runTransaction(this.store, () => {
+      const promise = Promise.all([
+        updateDoc(
+          doc(this.store, Collection.lists, prevContId),
+          {
+            tasks: arrayRemove(itemId),
           }
-        });
-      });
-    }
-
-    return tempLists;
+        ),
+        updateDoc(doc(this.store, Collection.lists, curContId), {
+          tasks: arrayUnion(itemId),
+        }),
+      ]);
+      return promise;
+    });
   }
 }
