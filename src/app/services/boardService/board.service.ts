@@ -16,7 +16,9 @@ import {
   WriteBatch,
   FieldValue,
   onSnapshot,
-  Unsubscribe
+  Unsubscribe,
+  arrayUnion,
+  arrayRemove
 } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { Board } from '../../helpers/classes/Board';
@@ -111,5 +113,17 @@ export class BoardService {
     }
 
     deleteDoc(doc(this.store, Collection.boards, board.id));
+  }
+
+  addListsToBoard(boardId: string, listsIds: string[]) {
+    updateDoc(doc(this.store, Collection.boards, boardId), {
+      lists: arrayUnion(listsIds),
+    });
+  }
+
+  removeListsFromBoard(boardId: string, listsIds: string[]) {
+    updateDoc(doc(this.store, Collection.boards, boardId), {
+      lists: arrayRemove(listsIds),
+    });
   }
 }

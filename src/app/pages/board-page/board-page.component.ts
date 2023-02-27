@@ -1,27 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Firestore,
-  addDoc,
-  deleteDoc,
-  updateDoc,
-  collection,
-  writeBatch,
-  WriteBatch,
-  getDocs,
-  serverTimestamp
-} from '@angular/fire/firestore';
-import {
-  onSnapshot,
-  query,
-  where,
-  doc,
-  documentId,
-  arrayUnion,
-  arrayRemove,
-  runTransaction,
-} from '@firebase/firestore';
-import {
   Collection,
   IBoard,
   IList,
@@ -33,7 +12,6 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/components/confirm-dialog/confirm-dialog.component';
 import { CreateUpdateDialogComponent } from 'src/app/components/create-update-dialog/create-update-dialog.component';
-import { List } from 'src/app/helpers/classes/List';
 import { BoardService } from 'src/app/services/boardService/board.service';
 import { ListService } from 'src/app/services/listService/list.service';
 import { TaskService } from 'src/app/services/taskService/task.service';
@@ -66,7 +44,6 @@ export class BoardPageComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private store: Firestore,
     private dialog: MatDialog,
     private boardService: BoardService,
     private listService: ListService,
@@ -90,26 +67,9 @@ export class BoardPageComponent implements OnInit, OnDestroy {
         return;
       } else {
         if (result.op === OperationType.create) {
-          const newList = await addDoc(
-            collection(this.store, Collection.lists),
-            {
-              ...new List({
-                ...result.item,
-                created: serverTimestamp(),
-                tasks: [],
-              })
-            }
-          );
-          updateDoc(doc(this.store, Collection.boards, this.board.id), {
-            lists: arrayUnion(newList.id),
-          });
+          await this.listService.addList(result.item, this.board?.id);
         } else {
-          updateDoc(doc(this.store, Collection.lists, result.item.id), {
-            ...new List({
-              ...result.item,
-              updated: serverTimestamp(),
-            })
-          });
+          this.listService.updateList(result.item);
         }
       }
     });
@@ -130,28 +90,7 @@ export class BoardPageComponent implements OnInit, OnDestroy {
         return;
       } else {
         if (result.item.id && list?.id && this.board?.id) {
-          if (result.item.tasks.length) {
-            const batch: WriteBatch = writeBatch(this.store);
-
-            const tasksQuery = query(
-              collection(this.store, Collection.tasks),
-              where(documentId(), 'in', result.item.tasks)
-            );
-
-            const tasksQuerySnapshot = await getDocs(tasksQuery);
-            tasksQuerySnapshot.forEach(doc => batch.delete(doc.ref))
-            batch.commit();
-          }
-
-          runTransaction(this.store, () => {
-            const promise = Promise.all([
-              deleteDoc(doc(this.store, Collection.lists, result.item.id)),
-              updateDoc(doc(this.store, Collection.boards, this.board!.id), {
-                lists: arrayRemove(result.item.id),
-              }),
-            ]);
-            return promise;
-          });
+          await this.listService.deleteList(result.item, this.board?.id);
         }
       }
     });
@@ -168,15 +107,18 @@ export class BoardPageComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.router.navigate(['/']);
     } else {
+      this.unsubBoard?.();
+      this.boardSub?.unsubscribe?.();
       this.unsubBoard = this.boardService.subscribeOnBoardChange(boardIdFromRoute);
       this.boardService.loading.subscribe(loadingState => this.loading = loadingState);
       this.boardSub = this.boardService.result.subscribe(board => {
         this.board = board as (IList & IBoard);
         const tempLists: (IList)[] = [];
-
+        const tasksIds: string[] = [];
         if (board?.lists?.length) {
+          this.unsubLists?.();
+          this.listsSub?.unsubscribe?.();
           this.unsubLists = this.listService.subscribeOnListsChange(this.board?.lists);
-          const tasksIds: string[] = [];
 
           this.listsSub = this.listService.result.subscribe(lists => {
             tasksIds.length = 0;
@@ -187,6 +129,8 @@ export class BoardPageComponent implements OnInit, OnDestroy {
             });
 
             if (tasksIds.length) {
+              this.unsubTasks?.();
+              this.tasksSub?.unsubscribe?.();
               this.unsubTasks = this.taskService.subscribeOnTasksChange(tasksIds);
               this.tasksSub = this.taskService.results.subscribe(tasks => {
                 (lists as (IList & IBoard)[]).forEach((list: IList, listInd: number) => {
@@ -222,7 +166,6 @@ export class BoardPageComponent implements OnInit, OnDestroy {
     this.unsubBoard?.();
     this.unsubLists?.();
     this.unsubTasks?.();
-
     this.boardSub?.unsubscribe?.();
     this.listsSub?.unsubscribe?.();
     this.tasksSub?.unsubscribe?.();
